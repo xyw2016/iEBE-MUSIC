@@ -140,7 +140,17 @@ ipglasma_dict = {
     'writeOutputs': 5,
     'writeEvolution': 0,
     'writeInitialWilsonLines': 0,
-    'writeOutputsToHDF5': 0
+    'writeOutputsToHDF5': 0,
+    'R_WS': 6.6,
+    'a_WS': 0.52,
+    'beta3': 0.0,
+    'beta4': 0.08,
+    'gamma': 0.82,
+    'force_dmin_flag': 1,
+    'd_min': 0.9,
+    'readInitialWilsonLines': 0,
+    'SubNucleonParamType': 0,
+    'SubNucleonParamSet': -1
 }
 
 
