@@ -141,6 +141,7 @@ ipglasma_dict = {
     'writeEvolution': 0,
     'writeInitialWilsonLines': 0,
     'writeOutputsToHDF5': 0,
+    'setWSDeformParams': 0,
     'R_WS': 6.6,
     'a_WS': 0.52,
     'beta3': 0.0,
