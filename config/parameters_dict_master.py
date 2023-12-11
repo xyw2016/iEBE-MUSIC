@@ -76,7 +76,7 @@ ipglasma_dict = {
     'mode': 1,              # run mode
     'readMultFromFile': 0,
     'size': 720,            # number of grid points of IP-Glasma computation
-    'L': 30.,               # grid size in the transverse plane
+    'L': 34.,               # grid size in the transverse plane
     'Nc': 3,                # number of color
     'm': 0.2,               # infrared cut-off mass (GeV)
     'rmax': 10.,
@@ -253,7 +253,7 @@ music_dict = {
     'eta_rhob_plateau_size': 1.0,
     'eta_rhob_fall_off': 0.1,
     
-    'Initial_baryon_profile': 1,
+    'Initial_baryon_profile': 0,
     'yL_frac': 0.5,
     'central_baryon_frac': 0.4,
     'initial_rhob_shift': 0,
@@ -353,6 +353,7 @@ iss_dict = {
     'include_deltaf_diffusion': 0,  # include delta f contribution from diffusion
 
     'bulk_deltaf_kind': 1,     # 0: 14-momentum approximation, 1: relaxation time approximation
+    'f0_is_not_small': 1,
     'restrict_deltaf': 0,      # flag to apply restriction on the size of delta f
     'deltaf_max_ratio': 1.0,   # the maximum allowed size of delta f w.r.t f0
     'quantum_statistics': 1,   # include quantum statistics (1: yes, 0: no)

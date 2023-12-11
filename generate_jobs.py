@@ -66,24 +66,24 @@ def write_script_header(cluster, script, n_threads, event_id, walltime,
 #SBATCH -J {0:s}
 #SBATCH -N 1
 #SBATCH -n {1:d}
-#SBATCH --mem={2:.0f}G
+#SBATCH --mem=8G
 #SBATCH -e test.err
 #SBATCH -o test.log
 #SBATCH --account=def-gale
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=lipei.du@mail.mcgill.ca
-#SBATCH -t {3:s}
-#SBARCH -D {4:s}
-
-module load nixpkgs/16.09  intel/2018.3  impi/2018.3.222
+#SBATCH -t {2:s}
+#SBARCH -D {3:s}
+module load nixpkgs
+module load intel 
+module load impi
 module load gsl
-module load hdf5-mpi/1.8.18
-module load StdEnv/2020 intel/2020.1.217 hdf5/1.12.1
+module load hdf5-mpi
+module load StdEnv
+module load hdf5
 module load gcc
 module load python
-module load scipy-stack/2023a
+module load scipy-stack
 
-""".format(event_id, n_threads, mem, walltime, working_folder)
+""".format(event_id, n_threads,  walltime, working_folder)
         )
     elif cluster == "wsugrid":
         script.write("""#!/usr/bin/env bash
@@ -326,9 +326,12 @@ export OMP_NUM_THREADS={0:d}
 
     if cluster_name != "OSG":
         script.write("""
+
 # KoMPoST EKT evolution
 ./KoMPoST.exe setup.ini 1> run.log 2> run.err
 mv *.txt $results_folder
+
+
 )
 """)
     else:
@@ -1042,7 +1045,7 @@ def main():
     event_id_offset = 0
     n_hydro_rescaled = n_hydro_per_job
     
-    walltime = '10:00:00'
+    walltime = '24:00:00'
     if "walltime" in parameter_dict.control_dict.keys():
         walltime = parameter_dict.control_dict["walltime"]
         

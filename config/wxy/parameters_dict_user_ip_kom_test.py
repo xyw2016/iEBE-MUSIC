@@ -20,14 +20,25 @@ control_dict = {
 ipglasma_dict = {
     'type': "self",
     # all parameters below are for (type == self)
-    'bmin': 7.,
-    'bmax': 8.,
-    'Projectile': "Au",
-    'Target': "Au",
-    'roots': 200.,
-    'SigmaNN': 42.,
+    'size': 700,            # number of grid points of IP-Glasma computation
+    'L': 28.,               # grid size in the transverse plane
+    'bmin': 10.,
+    'bmax': 12,
+    'Projectile': "Pb",
+    'Target': "Pb",
+    'roots': 2760.,
+    'SigmaNN': 64.,
+    'setWSDeformParams': 1,
+    'R_WS': 6.62,
+    'a_WS': 0.546,
+    'beta2': 0.0,
+    'beta3': 0.0,
+    'beta4': 0.0,
+    'gamma': 0.82,
     'd_min':0.9,
     'maxtime':0.1,
+    'LOutput': 34,
+    'sizeOutput': 512,
     'useConstituentQuarkProton': 3,   # 0: round proton; 3: fluctuating proton
 }
 
@@ -42,7 +53,13 @@ kompost_dict = {
         'EtaOverS': 0.12,                   # specific shear viscosity
     },
     'EventInput': {
-        'normFactor': 0.287,    # Tmunu is normalized by this factor after being read in
+        'normFactor': 0.235,    # Tmunu is normalized by this factor after being read in
+        'afm': 0.0664062,       # lattice spacing in fm
+        'Ns': 512,              # number of grid points on a square lattice
+        'xSTART': 0,            # The first grid point to include in the x direction
+        'xEND': 511,            # The last grid point to include in the x direction
+        'ySTART': 0,            # The first grid point to include in the y direction
+        'yEND': 511,            # The last grid point to include in the y direction
     },
 }
 
@@ -71,6 +88,14 @@ music_dict = {
     'Include_second_order_terms': 1,       # include second order non-linear coupling terms
     'Include_vorticity_terms': 0,          # include vorticity coupling terms
 
+    'output_evolution_data': 2,     # flag to output evolution history to file
+    'output_evolution_T_cut': 0.13,
+    'outputBinaryEvolution': 1,     # output evolution file in binary format
+    'output_evolution_every_N_eta': 1,  # output evolution file every Neta steps
+    'output_evolution_every_N_x':  1,   # output evolution file every Nx steps
+    'output_evolution_every_N_y': 1,    # output evolution file every Ny steps
+    'output_evolution_every_N_timesteps':40,  # output evolution every Ntime steps
+    
     # parameters for freeze out and Cooper-Frye
     'N_freeze_out': 1,
     'eps_freeze_max': 0.18,
@@ -80,12 +105,14 @@ music_dict = {
 
 # iSS
 iss_dict = {
-    'hydro_mode': 1,    # mode for reading in freeze out information 
+    'hydro_mode': 2,    # mode for reading in freeze out information 
+    'MC_sampling': 4, # 0/1/2/3: whether to perform Monte-Carlo sampling
+    'store_samples_in_memory': 0,    # flag to store particle samples in memory
     'include_deltaf_shear': 1,      # include delta f contribution from shear
     'include_deltaf_bulk': 1,       # include delta f contribution from bulk
     'sample_upto_desired_particle_number': 1,  # 1: flag to run sampling until desired
                                                # particle numbers is reached
-    'number_of_particles_needed': 100000,      # number of hadrons to sample
+    'number_of_particles_needed': 5000,      # number of hadrons to sample 100000
     'local_charge_conservation': 0,  # flag to impose local charge conservation
     'global_momentum_conservation': 0,  # flag to impose GMC
 }

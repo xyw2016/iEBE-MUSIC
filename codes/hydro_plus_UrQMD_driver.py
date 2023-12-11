@@ -48,6 +48,8 @@ def get_initial_condition(database, initial_type, iev, seed_add,
         file_name = ("epsilon-u-Hydro-t{0:s}-{1}.dat".format(
                                                 time_stamp_str, iev))
         if "KoMPoST" in initial_type:
+            file_name0 = ("epsilon-u-Hydro-t{0:s}-{1}.dat".format(
+                                                time_stamp_str, iev))
             file_name = ("Tmunu-t{0:s}-{1}.dat".format(time_stamp_str, iev))
         if database == "self":
             # check existing events ...
@@ -73,7 +75,7 @@ def get_initial_condition(database, initial_type, iev, seed_add,
                         path.join(ipglasma_local_folder, file_name))
             collect_ipglasma_event(final_results_folder, iev)
         connect_ipglasma_event(final_results_folder, initial_type,
-                               iev, file_name)
+                               iev, file_name,file_name0)
         return file_name
     elif initial_type == "3DMCGlauber_dynamical":
         if database == "self":
@@ -142,7 +144,7 @@ def collect_ipglasma_event(final_results_folder, event_id):
 
 
 def connect_ipglasma_event(final_results_folder, initial_type, event_id,
-                           filename):
+                           filename,filename0):
     ipglasma_folder_name = "ipglasma_results_{}".format(event_id)
     res_path = path.join(path.abspath(final_results_folder),
                          ipglasma_folder_name)
@@ -155,6 +157,7 @@ def connect_ipglasma_event(final_results_folder, initial_type, event_id,
              shell=True)
     elif initial_type == "IPGlasma+KoMPoST":
         kompost_initial_file = "kompost/Tmunu.dat"
+
         if path.islink(kompost_initial_file):
             remove(kompost_initial_file)
         call("ln -s {0:s} {1:s}".format(path.join(res_path, filename),
