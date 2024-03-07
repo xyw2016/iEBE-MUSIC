@@ -69,19 +69,13 @@ def write_script_header(cluster, script, n_threads, event_id, walltime,
 #SBATCH --mem=8G
 #SBATCH -e test.err
 #SBATCH -o test.log
-#SBATCH --account=def-gale
+#SBATCH --account=def-jeon
 #SBATCH -t {2:s}
 #SBARCH -D {3:s}
-module load nixpkgs
-module load intel 
-module load impi
+
+module load StdEnv/2023  gcc/12.3  openmpi/4.1.5 hdf5/1.14.2 python/3.11.5 scipy-stack/2023b
 module load gsl
-module load hdf5-mpi
-module load StdEnv
 module load hdf5
-module load gcc
-module load python
-module load scipy-stack
 
 """.format(event_id, n_threads,  walltime, working_folder)
         )
@@ -329,6 +323,11 @@ export OMP_NUM_THREADS={0:d}
 
 # KoMPoST EKT evolution
 ./KoMPoST.exe setup.ini 1> run.log 2> run.err
+tar zcvf ekt_evo.tar.gz ekt_tIn01_tOut08_*
+rm ekt_tIn01_tOut08_*
+rm EnergyResponse_*
+rm MomentumResponse_*
+mv *.tar.gz $results_folder
 mv *.txt $results_folder
 
 
@@ -338,6 +337,11 @@ mv *.txt $results_folder
         script.write("""
 # KoMPoST EKT evolution
 ./KoMPoST.exe setup.ini
+tar zcvf ekt_evo.tar.gz ekt_tIn01_tOut08_*
+rm ekt_tIn01_tOut08_*
+rm EnergyResponse_*
+rm MomentumResponse_*
+mv *.tar.gz $results_folder
 mv *.txt $results_folder
 )
 """)
