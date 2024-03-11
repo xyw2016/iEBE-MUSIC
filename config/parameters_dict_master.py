@@ -46,31 +46,28 @@ smashini_dict =  {
 
 
 part2s_dict = {
-    'PATHIN':   'input/evo.bin',
-    'PATHIN2':  'input/ini.bin',
+    'PATHIN':   'input/ini.bin',
     'PATHOUT':  'output',
 
     'NX':   201,
     'NY':   201,
-    'NZ':   201,
     'NETA': 201,
 
     'DX':   0.15,
     'DY':   0.15,
-    'DZ':   0.15,
     'DETA': 0.15,
 
 
-    'SIGR': 0.6,
-    'SIGZ': 0.6,
-    'SIGETA':   0.6,
+    'SIGR':  0.6,
+    'SIGETA': 0.6,
 
-
-    'TAU0' :    3.2,
-
+    'TAU00': 0.0,
+    'TAU0' : 3.2,
+    'NTAU' : 10,
     'EOS_ID' : 12,
 
     'read_binary': 1,
+
 }
 
 
