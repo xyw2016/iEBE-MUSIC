@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-module load cmake/3.17.2
-
 Green='\033[0;32m'
 NC='\033[0m'
 
@@ -30,28 +28,28 @@ number_of_cores_to_compile=$(( ${number_of_cores} > 10 ? 10 : ${number_of_cores}
 #fi
 
 # compile IPGlasma
-# echo -e "${Green}compile IPGlasma ... ${NC}"
-# (
-#     cd ipglasma_code
-#     ./compile_IPGlasma.sh
-# )
-# status=$?
-# if [ $status -ne 0 ]; then
-#     exit $status
-# fi
+echo -e "${Green}compile IPGlasma ... ${NC}"
+(
+     cd ipglasma_code
+     ./compile_IPGlasma.sh
+)
+status=$?
+if [ $status -ne 0 ]; then
+     exit $status
+fi
 
 # compile KoMPoST
-#echo -e "${Green}compile KoMPoST ... ${NC}"
-#(
-#    cd kompost_code
-#    make
-#)
-#status=$?
-#if [ $status -ne 0 ]; then
-#    exit $status
-#fi
-
-# compile MUSIC
+echo -e "${Green}compile KoMPoST ... ${NC}"
+(
+    cd kompost_code
+    make
+)
+status=$?
+if [ $status -ne 0 ]; then
+    exit $status
+fi
+##
+## compile MUSIC
 echo -e "${Green}compile MUSIC ... ${NC}"
 (
     cd MUSIC_code
@@ -70,7 +68,8 @@ cp MUSIC_code/example_inputfiles/IPGlasma_2D/music_input_mode_2 MUSIC/
 cp MUSIC_code/utilities/sweeper.sh MUSIC/
 (cd MUSIC; mkdir -p initial)
 
-# download iSS particle sampler
+
+## download iSS particle sampler
 echo -e "${Green}compile iSS ... ${NC}"
 (
     cd iSS_code
@@ -84,7 +83,9 @@ status=$?
 if [ $status -ne 0 ]; then
     exit $status
 fi
-
+mkdir -p iSS
+cp iSS_code/iSS_parameters.dat iSS/
+#
 # download UrQMD afterburner
 echo -e "${Green}compile UrQMD ... ${NC}"
 (
@@ -102,7 +103,7 @@ cp urqmd_code/urqmd/runqmd.sh urqmd/
 cp urqmd_code/urqmd/uqmd.burner urqmd/
 
 
-# download hadronic afterner
+ # download hadronic afterner
 echo -e "${Green}compile hadronic afterburner toolkit ... ${NC}"
 (
     cd hadronic_afterburner_toolkit_code
