@@ -42,17 +42,17 @@ number_of_cores_to_compile=$(( ${number_of_cores} > 10 ? 10 : ${number_of_cores}
 #fi
 #
 ## compile KoMPoST
-echo -e "${Green}compile KoMPoST ... ${NC}"
-(
-    cd kompost_code
-    make
-)
-status=$?
-if [ $status -ne 0 ]; then
-    exit $status
-fi
-#
-# compile MUSIC
+#echo -e "${Green}compile KoMPoST ... ${NC}"
+#(
+#    cd kompost_code
+#    make
+#)
+#status=$?
+#if [ $status -ne 0 ]; then
+#    exit $status
+#fi
+##
+## compile MUSIC
 #echo -e "${Green}compile MUSIC ... ${NC}"
 #(
 #    cd MUSIC_code
@@ -103,29 +103,29 @@ fi
 #mkdir -p urqmd
 #cp urqmd_code/urqmd/runqmd.sh urqmd/
 #cp urqmd_code/urqmd/uqmd.burner urqmd/
-#
-#
-## # download hadronic afterner
-#echo -e "${Green}compile hadronic afterburner toolkit ... ${NC}"
-#(
-#    cd hadronic_afterburner_toolkit_code
-#    mkdir -p build
-#    cd build
-#    cmake .. -Dlink_with_lib=OFF
-#    make -j${number_of_cores_to_compile}
-#    make install
-#    cd ../ebe_scripts
-#    g++ convert_to_binary.cpp -lz -o convert_to_binary.e
-#    mv convert_to_binary.e ../
-#    g++ concatenate_binary_files.cpp -lz -o concatenate_binary_files.e
-#    mv concatenate_binary_files.e ../
-#)
-#status=$?
-#if [ $status -ne 0 ]; then
-#    exit $status
-#fi
-#mkdir -p hadronic_afterburner_toolkit
-#cp hadronic_afterburner_toolkit_code/convert_to_binary.e hadronic_afterburner_toolkit/
-#cp hadronic_afterburner_toolkit_code/concatenate_binary_files.e hadronic_afterburner_toolkit/
-#cp hadronic_afterburner_toolkit_code/parameters.dat hadronic_afterburner_toolkit/
-#cp hadronic_afterburner_toolkit_code/ebe_scripts/average_event_HBT_correlation_function.py hadronic_afterburner_toolkit/
+
+
+# # download hadronic afterner
+echo -e "${Green}compile hadronic afterburner toolkit ... ${NC}"
+(
+    cd hadronic_afterburner_toolkit_code
+    mkdir -p build
+    cd build
+    cmake .. -Dlink_with_lib=OFF
+    make -j${number_of_cores_to_compile}
+    make install
+    cd ../ebe_scripts
+    g++ convert_to_binary.cpp -lz -o convert_to_binary.e
+    mv convert_to_binary.e ../
+    g++ concatenate_binary_files.cpp -lz -o concatenate_binary_files.e
+    mv concatenate_binary_files.e ../
+)
+status=$?
+if [ $status -ne 0 ]; then
+    exit $status
+fi
+mkdir -p hadronic_afterburner_toolkit
+cp hadronic_afterburner_toolkit_code/convert_to_binary.e hadronic_afterburner_toolkit/
+cp hadronic_afterburner_toolkit_code/concatenate_binary_files.e hadronic_afterburner_toolkit/
+cp hadronic_afterburner_toolkit_code/parameters.dat hadronic_afterburner_toolkit/
+cp hadronic_afterburner_toolkit_code/ebe_scripts/average_event_HBT_correlation_function.py hadronic_afterburner_toolkit/

@@ -6,11 +6,11 @@
 
 # control parameters
 control_dict = {
-    'initial_state_type': "IPGlasma+KoMPoST",
-    'walltime': "24:00:00",  # walltime to run
+    'initial_state_type': "IPGlasma",
+    'walltime': "6:00:00",  # walltime to run
     'use_iS3D': False,               # flag to use iS3D as sampler
     'save_ipglasma_results': True,   # flag to save ipglasma results
-    'save_kompost_results': True,   # flag to save kompost results
+    'save_kompost_results': False,   # flag to save kompost results
     'save_hydro_surfaces': True,   # flag to save hydro surfaces
     'save_UrQMD_files': True,      # flag to save UrQMD files
 }
@@ -22,8 +22,8 @@ ipglasma_dict = {
     # all parameters below are for (type == self)
     'size': 700,            # number of grid points of IP-Glasma computation
     'L': 28.,               # grid size in the transverse plane
-    'bmin': 0.00,
-    'bmax': 3.60375,
+    'bmin': 7.2353,
+    'bmax': 8.86784,
     'Projectile': "Pb",
     'Target': "Pb",
     'roots': 2760.,
@@ -36,7 +36,7 @@ ipglasma_dict = {
     'beta4': 0.0,
     'gamma': 0.82,
     'd_min':0.9,
-    'maxtime':0.1,
+    'maxtime':0.4,
     'LOutput': 34,
     'sizeOutput': 512,
     'useConstituentQuarkProton': 3,   # 0: round proton; 3: fluctuating proton
@@ -53,8 +53,7 @@ kompost_dict = {
         'EtaOverS': 0.12,                   # specific shear viscosity
     },
     'EventInput': {
-        'NT': 10,
-        'normFactor':0.285,
+        'normFactor': 0.235,    # Tmunu is normalized by this factor after being read in
         'afm': 0.0664062,       # lattice spacing in fm
         'Ns': 512,              # number of grid points on a square lattice
         'xSTART': 0,            # The first grid point to include in the x direction
@@ -72,13 +71,12 @@ music_dict = {
                             #   -- 91: e and u^\mu,
                             #   -- 92: e only,
                             #   -- 93: e, u^\mu, and pi^\munu
-    'Initial_time_tau_0': 0.8,  # starting time of the hydrodynamic evolution (fm/c)
+    's_factor': 0.235,        # normalization factor read in initial data file
+    'Initial_time_tau_0': 0.4,  # starting time of the hydrodynamic evolution (fm/c)
     'Delta_Tau': 0.005,         # time step to use in the evolution [fm/c]
     'boost_invariant':  1,      # whether the simulation is boost-invariant
     'EOS_to_use': 9,            # type of the equation of state
                                 # 9: hotQCD EOS with UrQMD
-    'initialize_with_entropy': 0, # initialize entropy
-    
     # transport coefficients
     'quest_revert_strength': 1.0,          # the strength of the viscous regulation
     'Viscosity_Flag_Yes_1_No_0': 1,        # turn on viscosity in the evolution
@@ -86,7 +84,7 @@ music_dict = {
     'Shear_to_S_ratio': 0.12,              # value of \eta/s
     'T_dependent_Shear_to_S_ratio': 0,     # flag to use temperature dep. \eta/s(T)
     'Include_Bulk_Visc_Yes_1_No_0': 1,     # include bulk viscous effect
-    'T_dependent_zeta_over_s': 9,          # parameterization of \zeta/s(T)
+    'T_dependent_zeta_over_s': 8,          # parameterization of \zeta/s(T)
     'Include_second_order_terms': 1,       # include second order non-linear coupling terms
     'Include_vorticity_terms': 0,          # include vorticity coupling terms
 
@@ -107,15 +105,14 @@ music_dict = {
 
 # iSS
 iss_dict = {
-    'hydro_mode': 1,    # mode for reading in freeze out information 
-    'MC_sampling': 4, # 0/1/2/3: whether to perform Monte-Carlo sampling
-    'bulk_deltaf_kind': 20,     # 0 : 14-moment approximation (s95p-v0-pce)
-    'store_samples_in_memory': 0,    # flag to store particle samples in memory
+    'hydro_mode': 2,    # mode for reading in freeze out information 
+    'MC_sampling': 2, # 0/1/2/3: whether to perform Monte-Carlo sampling
+    'store_samples_in_memory': 1,    # flag to store particle samples in memory
     'include_deltaf_shear': 1,      # include delta f contribution from shear
     'include_deltaf_bulk': 1,       # include delta f contribution from bulk
     'sample_upto_desired_particle_number': 1,  # 1: flag to run sampling until desired
                                                # particle numbers is reached
-    'number_of_particles_needed': 5000,      # number of hadrons to sample 100000
+    'number_of_particles_needed': 5000,      # number of hadrons to sample
     'local_charge_conservation': 0,  # flag to impose local charge conservation
     'global_momentum_conservation': 0,  # flag to impose GMC
 }

@@ -7,7 +7,7 @@
 # control parameters
 control_dict = {
     'initial_state_type': "IPGlasma+KoMPoST",
-    'walltime': "48:00:00",  # walltime to run
+    'walltime': "24:00:00",  # walltime to run
     'use_iS3D': False,               # flag to use iS3D as sampler
     'save_ipglasma_results': True,   # flag to save ipglasma results
     'save_kompost_results': True,   # flag to save kompost results
@@ -115,7 +115,7 @@ iss_dict = {
     'include_deltaf_bulk': 1,       # include delta f contribution from bulk
     'sample_upto_desired_particle_number': 1,  # 1: flag to run sampling until desired
                                                # particle numbers is reached
-    'number_of_particles_needed': 5000,      # number of hadrons to sample 100000
+    'number_of_particles_needed': 50000,      # number of hadrons to sample 100000
     'local_charge_conservation': 0,  # flag to impose local charge conservation
     'global_momentum_conservation': 0,  # flag to impose GMC
 }
