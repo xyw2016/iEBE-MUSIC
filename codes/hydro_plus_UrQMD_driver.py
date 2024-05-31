@@ -109,17 +109,16 @@ def get_initial_condition(database, initial_type, iev, use_averaged_smash, n_urq
             if not path.exists(file_name):
 
                 run_smashini_shell(n_smashini, final_results_folder, iev)
-
+                
+                part2s_input = "./part2s/input"
+                if not os.path.exists(part2s_input):
+                    os.makedirs(part2s_input)
                 for ies in range(n_smashini):
                     call("./part2s/convert_to_binary_SMASH_ini.e "
-                         + "SMASHini_{}/smash_init_results/SMASH_IC.oscar SMASH_ini.binary".format(ies),
-                         shell=True)
-                    call("./part2s/convert_to_binary_SMASH_evo.e "
-                         + "SMASHini_{}/smash_init_results/particle_lists.oscar SMASH_evo.binary".format(ies),
+                         + "SMASHini_{}/smash_init_results/SMASH_IC.oscar ./part2s/input/SMASH_ini.binary".format(ies),
                          shell=True)
 
                     call("rm SMASHini_{}/smash_init_results/SMASH_IC.oscar".format(ies), shell=True)
-                    call("rm SMASHini_{}/smash_init_results/particle_lists.oscar".format(ies), shell=True)
 
                 run_part2s_event(iev)
 
@@ -128,7 +127,6 @@ def get_initial_condition(database, initial_type, iev, use_averaged_smash, n_urq
                 shutil.copy("part2s/SMASH_ini.dat", "MUSIC/initial/SMASH_ini.dat")
 
                 shutil.move("part2s/SMASH_ini.dat", "part2s/part2s_results/SMASH_ini.dat")
-                shutil.move("part2s/pre_equlibrium_evo_txyz.dat", "part2s/part2s_results/pre_equlibrium_evo_txyz.dat")
 
                 part2s_source_folder = "part2s/part2s_results"
                 part2s_destination_folder = path.join(final_results_folder, "part2s_results_{}".format(iev))
@@ -144,7 +142,7 @@ def get_initial_condition(database, initial_type, iev, use_averaged_smash, n_urq
 
                 # shutil.move("part2s/part2s_results", path.join(final_results_folder, "part2s_results_{}".format(event_id)))
 
-                call("rm SMASH_ini.binary SMASH_evo.binary", shell=True)
+                call("rm {}/SMASH_ini.binary".format(part2s_input), shell=True)
 
             else:
                 print("SMASH_initial event exists in MUSIC/initial/ ...")

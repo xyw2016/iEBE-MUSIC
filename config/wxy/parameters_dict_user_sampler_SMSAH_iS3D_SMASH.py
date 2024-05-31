@@ -7,9 +7,9 @@
 
 # control parameters
 control_dict = {
-    'initial_state_type': "3DMCGlauber_consttau",
+    'initial_state_type': "SMASH_initial",
     'walltime': "8:30:00",          # walltime to run
-    'use_iS3D': False,               # flag to use iS3D as sampler
+    'use_iS3D': True,               # flag to use iS3D as sampler
     'use_SMASH_afterburner': True,    # flag to use SMASH as afterburner
     'save_ipglasma_results': False,   # flag to save IPGlasma results
     'save_kompost_results': False,    # flag to save kompost results
@@ -27,10 +27,10 @@ smashini_dict =  {
     'Modus': 'Collider',
     'Time_Step_Mode': 'Fixed',
     'Delta_Time': 0.1,
-    'End_Time': 20.0,
+    'End_Time': 2000.0,
     'Proper_Time': 3.2,
     'Randomseed': -1,
-    'Nevents': 1,
+    'Nevents': 50,
     'Output_Interval': 10.0,
     'Format': 'Oscar2013',
     'E_Kin': 1.23,
@@ -41,16 +41,16 @@ smashini_dict =  {
 }
 
 part2s_dict = {
-    'PATHIN':   'input/ini.bin',
-    'PATHOUT':  'output',
+    'PATHIN':   'input/SMASH_ini.binary',
+    'PATHOUT':  './',
 
-    'NX':   201,
-    'NY':   201,
-    'NETA': 201,
+    'NX':   101,
+    'NY':   101,
+    'NETA': 101,
 
-    'DX':   0.15,
-    'DY':   0.15,
-    'DETA': 0.15,
+    'DX':   0.3,
+    'DY':   0.3,
+    'DETA': 0.3,
 
 
     'SIGR':  0.6,
@@ -67,7 +67,7 @@ part2s_dict = {
 
 # MUSIC
 music_dict = {
-    'Initial_profile': 11,      # type of initial condition (11 or 111)
+    'Initial_profile': 21,      # type of initial condition (11 or 111)
                                 # 3dMCGlauber smooth initial condition based on
                                 # the nuclear thickness funciton TA and TB
     'Initial_TA_Distribution_Filename': 'initial/initial_TA.dat',
@@ -177,11 +177,13 @@ is3d_dict = {
     'partial_surface_tau_min': 0.0,
     'partial_surface_tau_max': 2.05,
 
-    'hrg_eos': 1,                     # determines what PDG file to read in (chosen particles must be subset of selected PDG!)
+    'hrg_eos': 2,                     # determines what PDG file to read in (chosen particles must be subset of selected PDG!)
                                       #   1 = urqmd v3.3+     (goes up to n-2250)
                                       #   2 = smash           (goes up to Υ(3S))
                                       #   3 = smash box       (smash box: no decay info now, so can't do resdecays)   (what is this?)
 
+    'afterburner_type': 2,            #   1 = urqmd
+                                      #   2 = smash                               
     'dimension': 3,                   # dimensionality of the freezeout surface
                                       #   2 = boost-invariant 2+1d
                                       #   3 = non boost-invariant 3+1d
@@ -210,6 +212,8 @@ is3d_dict = {
 
     'min_num_hadrons': 1.0e+7,        # across all samples >= min_num_hadrons
     'max_num_samples': 1.0e+3,        # oversampling will finish after this number of samples
+    'fix_oversample_num_flag': 1,     # switch to specify the number of samples (SMASH needs to know Nevents)
+    'oversample_num':   1000,       # oversampling will finish after this number of samples (Nevents for SMASH afterburner)
 
     'sampler_seed': -1,                # sets seed of particle sampler. If sampler_seed < 0, seed is set using clocktime
 
@@ -230,21 +234,24 @@ is3d_dict = {
 
 }
 
+urqmd_dict = {
+    'run_collisionless': 0,         # flag to run afterburner without collisions
+}
 
 smash_dict =  {
     'default': 'INFO',
     'Modus': 'List',
     'Time_Step_Mode': 'None',
     'Delta_Time': 0.1,
-    'End_Time': 50.0,                 
+    'End_Time': 5000.0,                 
     'Randomseed': -1,
     'Nevents': 1,                     # overwritten by 'oversample_num' in iS3D
     'Output_Interval': 10.0,
     'Format': 'Oscar2013',
-    'File_Directory': "./input/list",
+    'File_Directory': "./",
     'File_Prefix': "particle_list_osc",
     'Shift_Id': 0,
-    'Extended': 'False',
+    'Extended': 'True',
 }
 
 

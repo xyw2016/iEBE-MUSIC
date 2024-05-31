@@ -69,19 +69,13 @@ def write_script_header(cluster, script, n_threads, event_id, walltime,
 #SBATCH --mem={2:.0f}G
 #SBATCH -e test.err
 #SBATCH -o test.log
-#SBATCH --account=def-gale
+#SBATCH --account=def-Jeon
 #SBATCH --mail-type=ALL
-#SBATCH --mail-user=lipei.du@mail.mcgill.ca
 #SBATCH -t {3:s}
 #SBARCH -D {4:s}
 
-module load nixpkgs/16.09  intel/2018.3  impi/2018.3.222
 module load gsl
-module load hdf5-mpi/1.8.18
-module load StdEnv/2020 intel/2020.1.217 hdf5/1.12.1
-module load gcc
-module load python
-module load scipy-stack/2023a
+module load StdEnv/2023  gcc/12.3  openmpi/4.1.5 hdf5/1.14.2 python/3.11.5 scipy-stack/2023b
 
 """.format(event_id, n_threads, mem, walltime, working_folder)
         )
@@ -817,7 +811,7 @@ def generate_event_folders(initial_condition_database, initial_condition_type,
             mkdir(path.join(part2s_event_folder, 'eos/EOS'))
             shutil.copyfile(path.join(param_folder, 'part2s/setup.ini'),
                             path.join(part2s_event_folder, 'setup.ini'))
-            for link_i in ['Preequilibrium', 'convert_to_binary_SMASH_ini.e', 'convert_to_binary_SMASH_evo.e']:
+            for link_i in ['Preequilibrium', 'convert_to_binary_SMASH_ini.e']:
                 subprocess.call("ln -s {0:s} {1:s}".format(
                     path.abspath(
                         path.join(code_path, 'part2s_code/{}'.format(link_i))), part2s_event_folder),

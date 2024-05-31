@@ -34,7 +34,7 @@ rm -fr iSS_code/.git
 
 # download iS3D particle sampler
 rm -fr iS3D_code
-git clone --depth=1 https://github.com/LipeiDu/iS3D2.git -b ldu_dev iS3D_code
+git clone --depth=1 https://github.com/xyw2016/iS3D2.githttps://github.com/xyw2016/iS3D2.git -b dev_xyw iS3D_code
 rm -fr iS3D_code/.git
 
 # download UrQMD afterburner
