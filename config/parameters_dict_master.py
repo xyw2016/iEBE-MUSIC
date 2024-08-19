@@ -597,7 +597,7 @@ hadronic_afterburner_toolkit_dict = {
     'pT_max': 4.05,     # the maximum value of transverse momentum (GeV)
     'rap_min': -0.5,    # minimum value of rapidity integration range for mid-rapidity observables 
     'rap_max': 0.5,     # maximum value of rapidity integration range for mid-rapidity observables 
-
+    'upper_cut_pT': 1,
     'single_rapidity_bin_distribution': 1, # output pT-differential and pT-integrated distributions
                               # in a specific rapidity bin
 

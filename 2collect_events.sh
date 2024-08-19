@@ -52,8 +52,10 @@ do
         event_id=`echo $iev | rev | cut -f 1 -d "_" | rev`
         hydro_folder="${eventsPath}/${iev}/${hydro_folder_name}*${event_id}/"
         urqmd_file="${eventsPath}/${iev}/${UrQMD_file_name}*${event_id}.gz"
+        kompost_file="${eventsPath}/${iev}/${kompost_folder_name}*${event_id}/ekt_evo.tar.gz"
         hydrostatus=false
         urqmdstatus=false
+        kompoststatus=false
         if [ -d $hydro_folder ]; then
             hydrostatus1=`tail -n 1 ${eventsPath}/${iev}/${hydro_folder_name}*${event_id}/run.log | cut -f 4 -d " "`
             echo $hydrostatus1
@@ -63,6 +65,9 @@ do
         fi
         if [ -e $urqmd_file ]; then
             urqmdstatus=true
+        fi
+        if [ -e $kompost_file ]; then
+            kompoststatus=true
         fi
         if [ -a ${eventsPath}/${iev}/${spvn_folder_name}*${event_id}.h5 ]; then
             if [ "$hydrostatus" = true ]; then
