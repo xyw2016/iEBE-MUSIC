@@ -323,8 +323,8 @@ export OMP_NUM_THREADS={0:d}
 
 # KoMPoST EKT evolution
 ./KoMPoST.exe setup.ini 1> run.log 2> run.err
-tar zcvf ekt_evo.tar.gz ekt_tIn01_tOut08_*
-rm ekt_tIn01_tOut08_*
+tar zcvf ekt_evo.tar.gz ekt_tIn*_tOut*_*.music_init_flowNonLinear_pimunuTransverse.txt
+rm ekt_tIn*_tOut*_*.music_init_flowNonLinear_pimunuTransverse.txt
 rm EnergyResponse_*
 rm MomentumResponse_*
 mv *.tar.gz $results_folder
@@ -337,8 +337,8 @@ mv *.txt $results_folder
         script.write("""
 # KoMPoST EKT evolution
 ./KoMPoST.exe setup.ini
-tar zcvf ekt_evo.tar.gz ekt_tIn01_tOut08_*
-rm ekt_tIn01_tOut08_*
+tar zcvf ekt_evo.tar.gz ekt_tIn*_tOut*_*
+rm ekt_tIn*_tOut*_*
 rm EnergyResponse_*
 rm MomentumResponse_*
 mv *.tar.gz $results_folder

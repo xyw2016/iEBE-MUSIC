@@ -158,6 +158,7 @@ def connect_ipglasma_event(final_results_folder, initial_type, event_id,
 
         if path.islink(kompost_initial_file):
             remove(kompost_initial_file)
+
         call("ln -s {0:s} {1:s}".format(path.join(res_path, filename),
                                         kompost_initial_file),
              shell=True)
@@ -654,13 +655,22 @@ def main(para_dict_):
             hydro_initial_file = "MUSIC/initial/epsilon-u-Hydro.dat"
             if path.islink(hydro_initial_file):
                 remove(hydro_initial_file)
-            call("ln -s {0:s} {1:s}".format(
-                path.join(path.abspath(final_results_folder),
-                          kompost_folder_name,
-                          ("ekt_tIn01_tOut08"
-                           + ".music_init_flowNonLinear_pimunuTransverse.txt")),
-                hydro_initial_file),
-                 shell=True)
+            check_kompost_output_name = glob(path.join(path.abspath(final_results_folder),\
+                kompost_folder_name,("ekt_tIn*_tOut*"+\
+                ".music_init_flowNonLinear_pimunuTransverse.txt")))
+            if check_kompost_output_name:
+                kompost_output_name = check_kompost_output_name[-1]
+            else:
+                print("No Kompost output file!!!")
+                exit(1)
+            #call("ln -s {0:s} {1:s}".format(
+            #    path.join(path.abspath(final_results_folder),
+            #              kompost_folder_name,
+            #              ("ekt_tIn01_tOut08"
+            #               + ".music_init_flowNonLinear_pimunuTransverse.txt")),
+            #    hydro_initial_file),
+            #     shell=True)
+            call("ln -s {0:s} {1:s}".format(kompost_output_name, hydro_initial_file),shell=True)
         # copy pregenerated smash initial profile for hydro run
         if (initial_type == "SMASH_initial"
                 and initial_condition != "self"):

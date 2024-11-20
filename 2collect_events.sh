@@ -69,7 +69,7 @@ do
         if [ -e $kompost_file ]; then
             kompoststatus=true
         fi
-        #if [ -a ${eventsPath}/${iev}/${spvn_folder_name}*${event_id}.h5 ]; then
+        if [ -a ${eventsPath}/${iev}/${spvn_folder_name}*${event_id}.h5 ]; then
             if [ "$hydrostatus" = true ]; then
                 cp -rv ${eventsPath}/${iev}/${hydro_folder_name}*${event_id} $target_hydro_folder
             fi
@@ -79,7 +79,7 @@ do
             fi
             mv ${eventsPath}/${iev}/${spvn_folder_name}*${event_id}.h5 $target_spvn_folder
             ((collected_eventNum++))
-        #fi
+        fi
         ((total_eventNum++))
     done
 done
