@@ -64,12 +64,12 @@ def write_script_header(cluster, script, n_threads, event_id, walltime,
     elif cluster == "McGill":
         script.write("""#!/usr/bin/env bash
 #SBATCH -J {0:s}
-#SBATCH -N 1
+#SBATCH -N 2 
 #SBATCH -n {1:d}
 #SBATCH --mem=8G
 #SBATCH -e test.err
 #SBATCH -o test.log
-#SBATCH --account=def-jeon
+#SBATCH --account=rrg-jeon-ac 
 #SBATCH -t {2:s}
 #SBARCH -D {3:s}
 

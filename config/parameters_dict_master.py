@@ -598,6 +598,7 @@ hadronic_afterburner_toolkit_dict = {
     'rap_min': -0.5,    # minimum value of rapidity integration range for mid-rapidity observables 
     'rap_max': 0.5,     # maximum value of rapidity integration range for mid-rapidity observables 
 
+    'upper_cut_pT': 1,
     'single_rapidity_bin_distribution': 1, # output pT-differential and pT-integrated distributions
                               # in a specific rapidity bin
 
