@@ -8,7 +8,7 @@
 # rm -fr 3dMCGlauber_code/.git
 
 # # download IPGlasma
-rm -fr ipglasma_code
+#rm -fr ipglasma_code
 git clone --depth=1  https://github.com/xyw2016/ipglasma.git -b iebe_xyw_dev ipglasma_code
 commitHash="8e071daafbe45975ca7330bbc3d2f73b2124fdac"
 cd ipglasma_code 
@@ -17,7 +17,7 @@ rm -fr ipglasma_code/.git
 cd ..
 
 
-# # download KoMPoST
+ # download KoMPoST
 rm -fr kompost_code
 git clone --depth=1 https://github.com/xyw2016/KoMPoST.git -b xyw_iebe kompost_code
 commitHash="bc0355e5bbff7761054e8f8f3711d3e8ec2c321a"
@@ -29,7 +29,7 @@ cd ..
 ## download MUSIC
 rm -fr MUSIC_code
 git clone --depth=1  https://github.com/xyw2016/MUSIC.git -b xyw_dev2 MUSIC_code
-commitHash="cd2fcad77c47176fa3e1f8ae65960cde88cd22c9"
+commitHash="1394eddc9c3265de64ec22c8a28801d18fccb987"
 cd  MUSIC_code 
 git checkout $commitHash
 rm -fr MUSIC_code/.git
