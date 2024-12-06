@@ -39,15 +39,15 @@ if [ $status -ne 0 ]; then
 fi
 
 # compile KoMPoST
-echo -e "${Green}compile KoMPoST ... ${NC}"
-(
-    cd kompost_code
-    make
-)
-status=$?
-if [ $status -ne 0 ]; then
-    exit $status
-fi
+#echo -e "${Green}compile KoMPoST ... ${NC}"
+#(
+#    cd kompost_code
+#    make
+#)
+#status=$?
+#if [ $status -ne 0 ]; then
+#    exit $status
+#fi
 ##
 ## compile MUSIC
 echo -e "${Green}compile MUSIC ... ${NC}"

@@ -24,11 +24,11 @@ ipglasma_dict = {
     'L': 28.,               # grid size in the transverse plane
     'bmin': 7.2353,
     'bmax': 10.247,
-    'Projectile': "Pb",
-    'Target': "Pb",
+    'Projectile': "Ne",
+    'Target': "Ne",
     'roots': 2760.,
     'SigmaNN': 64.,
-    'setWSDeformParams': 1,
+    'setWSDeformParams': 0,
     'R_WS': 6.62,
     'a_WS': 0.546,
     'beta2': 0.0,
@@ -88,7 +88,7 @@ music_dict = {
     'Include_second_order_terms': 1,       # include second order non-linear coupling terms
     'Include_vorticity_terms': 0,          # include vorticity coupling terms
 
-    'output_evolution_data': 2,     # flag to output evolution history to file
+    'output_evolution_data': 5,     # flag to output evolution history to file
     'output_evolution_T_cut': 0.13,
     'outputBinaryEvolution': 1,     # output evolution file in binary format
     'output_evolution_every_N_eta': 1,  # output evolution file every Neta steps

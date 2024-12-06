@@ -9,8 +9,8 @@
 
 # # download IPGlasma
 rm -fr ipglasma_code
-git clone --depth=1  https://github.com/xyw2016/ipglasma.git -b iebe_xyw_dev ipglasma_code
-commitHash="8e071daafbe45975ca7330bbc3d2f73b2124fdac"
+git clone --depth=1 https://github.com/chunshen1987/ipglasma.git -b main ipglasma_code
+commitHash="819e672bb710f6bbc0fd751e6710a841d1fe7d27"
 cd ipglasma_code 
 git checkout $commitHash
 rm -fr ipglasma_code/.git
@@ -18,18 +18,18 @@ cd ..
 
 
 # # download KoMPoST
-rm -fr kompost_code
-git clone --depth=1 https://github.com/xyw2016/KoMPoST.git -b xyw_iebe kompost_code
-commitHash="bc0355e5bbff7761054e8f8f3711d3e8ec2c321a"
-cd  kompost_code 
-git checkout $commitHash
-rm -fr kompost_code/.git
-cd ..
+#rm -fr kompost_code
+#git clone --depth=1 https://github.com/xyw2016/KoMPoST.git -b xyw_iebe kompost_code
+#commitHash="bc0355e5bbff7761054e8f8f3711d3e8ec2c321a"
+#cd  kompost_code 
+#git checkout $commitHash
+#rm -fr kompost_code/.git
+#cd ..
 
 ## download MUSIC
 rm -fr MUSIC_code
-git clone --depth=1  https://github.com/xyw2016/MUSIC.git -b xyw_dev MUSIC_code
-commitHash="81f1c9b81c0ce5d32835a9403a32dc89b3b6b12b"
+git clone --depth=1  https://github.com/xyw2016/MUSIC.git -b xyw_dev2 MUSIC_code
+commitHash="c6de03276bfba8e7652f4cdb9fc3d88085b389e0"
 cd  MUSIC_code 
 git checkout $commitHash
 rm -fr MUSIC_code/.git

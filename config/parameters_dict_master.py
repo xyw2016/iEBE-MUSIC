@@ -151,7 +151,11 @@ ipglasma_dict = {
     'd_min': 0.9,
     'readInitialWilsonLines': 0,
     'SubNucleonParamType': 0,
-    'SubNucleonParamSet': -1
+    'SubNucleonParamSet': -1,
+    'computeGluonMultiplicity': 0,
+    'rotateReactionPlane': 1,
+    'dR_np': 0.0,
+    'da_np': 0.0
 }
 
 
