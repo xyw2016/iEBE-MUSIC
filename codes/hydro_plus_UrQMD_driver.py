@@ -47,7 +47,7 @@ def get_initial_condition(database, initial_type, iev, seed_add,
         ipglasma_local_folder = "ipglasma/ipglasma_results"
         #file_name = ("epsilon-u-Hydro-t{0:s}-{1}.dat".format(
         #                                        time_stamp_str, iev))
-        file_name = "epsilon-u-Hydro-TauHydro-0.dat"
+        file_name = "epsilon-u-Hydro-TauHydro-{0}.dat".format(iev)
         if "KoMPoST" in initial_type:
             file_name = ("Tmunu-t{0:s}-{1}.dat".format(time_stamp_str, iev))
         if database == "self":
