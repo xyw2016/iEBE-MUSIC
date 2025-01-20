@@ -64,13 +64,19 @@ def write_script_header(cluster, script, n_threads, event_id, walltime,
 """.format(event_id, n_threads, walltime, working_folder))
     elif cluster == "mcgill":
         script.write("""#!/usr/bin/env bash
-#PBS -N {0:s}
-#PBS -l nodes=1:ppn={1:d}:irulan
-#PBS -l walltime={2:s}
-#PBS -S /bin/bash
-#PBS -e test.err
-#PBS -o test.log
-#PBS -d {3:s}
+#SBATCH -J {0:s}
+#SBATCH -N 1
+#SBATCH -n {1:d}
+#SBATCH --mem=8G
+#SBATCH -e test.err
+#SBATCH -o test.log
+#SBATCH --account=def-jeon
+#SBATCH -t {2:s}
+#SBARCH -D {3:s}
+
+module load StdEnv/2023  gcc/12.3  openmpi/4.1.5 hdf5/1.14.2 python/3.11.5 scipy-stack/2023b
+module load gsl
+module load hdf5
 """.format(event_id, n_threads, walltime, working_folder))
     elif cluster == "wsugrid":
         script.write("""#!/usr/bin/env bash
