@@ -259,14 +259,16 @@ def generate_full_job_script(cluster_name, folder_name, database, initial_type,
         kompostFileName = "ekt"
 
     script.write("""
-python3 hydro_plus_UrQMD_driver.py {0:s} {1:s} {2:d} {3:d} {4:d} {5:d} {6} {7} {8} {9} $seed_add {10} {11} {12} {13:s} {14:s}
+python3 hydro_plus_UrQMD_driver.py {0:s} {1:s} {2:d} {3:d} {4:d} {5:d} {6} {7} {8} {9} $seed_add {10} {11} {12} {13} {14:s} {15:s}
 """.format(initial_type, database, n_hydro, ev0_id, n_urqmd, n_threads,
            para_dict.control_dict["save_ipglasma_results"],
            para_dict.control_dict["save_kompost_results"],
            para_dict.control_dict["save_hydro_surfaces"],
            para_dict.control_dict["save_UrQMD_files"],
            para_dict.control_dict["compute_polarization"],
-           para_dict.control_dict["compute_photon_emission"], enableCheckPoint,
+           para_dict.control_dict["compute_photon_emission"],
+           para_dict.control_dict["compute_dilepton_emission"], 
+           enableCheckPoint,
            afterburner_type, kompostFileName))
     script.write("""
 
@@ -410,6 +412,31 @@ export OMP_NUM_THREADS={0:d}
     script.write("""
 # perform photon radiation
 ./hydro_photonEmission.e 2>&1 {0}
+)
+""".format(logfile))
+
+    script.close()
+
+def generate_script_dilepton(folder_name, nthreads, logfile):
+    """This function generates script for photon radiation"""
+
+    working_folder = folder_name
+
+    script = open(path.join(working_folder, "run_dilepton.sh"), "w")
+
+    script.write("""#!/bin/bash
+(
+cd dileptonEmission_hydroInterface
+
+""")
+    if nthreads > 0:
+        script.write("""
+export OMP_NUM_THREADS={0:d}
+""".format(nthreads))
+
+    script.write("""
+# perform dilepton radiation
+./dilepton_emission.e 2>&1 {0}
 )
 """.format(logfile))
 
@@ -683,6 +710,26 @@ def generate_event_folders(initial_condition_database, initial_condition_type,
                           '{}'.format(link_i)))
             trgFilePath = path.join(event_folder,
                                     "photonEmission_hydroInterface",
+                                    "{}".format(link_i))
+            subprocess.call("ln -s {0:s} {1:s}".format(orgFilePath,
+                                                       trgFilePath),
+                            shell=True)
+    
+    if para_dict.control_dict['compute_dilepton_emission']:
+        # dilepton 
+        generate_script_dilepton(event_folder, n_threads, logfile)
+        mkdir(path.join(event_folder, 'dileptonEmission_hydroInterface'))
+        shutil.copyfile(
+            path.join(param_folder, 'dileptonEmission_hydroInterface',
+                      'parameters.dat'),
+            path.join(event_folder, 'dileptonEmission_hydroInterface',
+                      'parameters.dat'))
+        for link_i in ['ph_rates', 'dilepton_emission.e']:
+            orgFilePath = path.abspath(
+                path.join(code_path, 'dileptonEmission_hydroInterface_code',
+                          '{}'.format(link_i)))
+            trgFilePath = path.join(event_folder,
+                                    "dileptonEmission_hydroInterface",
                                     "{}".format(link_i))
             subprocess.call("ln -s {0:s} {1:s}".format(orgFilePath,
                                                        trgFilePath),
@@ -1038,6 +1085,8 @@ def main():
             parameter_dict.control_dict['compute_polarization'] = True
     if 'compute_photon_emission' not in parameter_dict.control_dict.keys():
         parameter_dict.control_dict['compute_photon_emission'] = False
+    if 'compute_dilepton_emission' not in parameter_dict.control_dict.keys():
+        parameter_dict.control_dict['compute_dilepton_emission'] = False
 
     EOSType = 9
     EOSId = 0

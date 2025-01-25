@@ -38,6 +38,12 @@ git clone --depth=1 https://github.com/chunshen1987/photonEmission_hydroInterfac
 (cd photonEmission_hydroInterface_code; git checkout a8a9f14c98a3e40519d9704090c3b42eba0107be)
 rm -fr photonEmission_hydroInterface_code/.git
 
+rm -fr dileptonEmission_hydroInterface_code
+git clone --depth=1 https://github.com/xyw2016/DileptonEmission.git -b dilepton_polarization dileptonEmission_hydroInterface_code
+(cd dileptonEmission_hydroInterface_code; git checkout f428b694e00b1684e6b1244611fcb67888ade65d)
+rm -fr dileptonEmission_hydroInterface_code/.git
+
+
 # download UrQMD afterburner
 rm -fr urqmd_code
 git clone --depth=1 https://Chunshen1987@bitbucket.org/Chunshen1987/urqmd_afterburner.git urqmd_code

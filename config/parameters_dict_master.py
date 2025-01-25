@@ -21,6 +21,9 @@ control_dict = {
     'save_UrQMD_files': False,  # flag to save UrQMD files
     'compute_photon_emission':
         False,  # flag to compute EM radiation from hydrodynamic medium
+    'compute_dilepton_emission':
+        False,  # flag to compute EM radiation from hydrodynamic medium
+
     'compute_polarization': False,  # flag to save spin polarization results
     'EOSType': 0,
     'EOSId': 0,
@@ -415,6 +418,74 @@ photon_dict = {
     'xperp_cutlow': -10.0,  # minimum value in x (fm)
 }
 
+
+
+# dilepton_emission
+dilepton_dict = {
+    'hydro_flag' : 2,
+    'hydro_nskip_tau' : 1,
+    'dilepton_emission_rate' : 2, 
+    'alpha_s' : 0.3,
+    'Xmin' : -15.0,
+    'dx' : 0.2,
+    'Ymin' : -15.0,
+    'dy' : 0.2,
+    'neta' : 10,
+    'eta_i' : 0.0,
+    'eta_f' : 3.0,
+    'ETAmax' : 15.0,
+    'T_sw_high' : 0.105,
+    'T_sw_low' : 0.103,
+    'T_dec' : 0.12,
+    'HydroinfoVisflag' : 1,
+    'HydroinfoBuffersize' : 500,
+    'include_baryondiff_deltaf' : 0, 
+    'include_shearvisc_deltaf' : 0,
+    'turn_off_transverse_flow' : 0,
+    'turn_on_muB' : 1 ,
+    'test_code_flag' : 0, 
+    'T_test' : 0.2,
+    'muB_test' : 0.0,
+    'rhoB_eplusp_test' : 2.0,
+    'inv_eplusp_test' : 1.0,
+    'np' : 20,
+    'nphi' : 20,
+    'nm' : 20,
+    'photon_q_i' : 0.0,
+    'photon_q_f' : 6.0,
+    'photon_phi_q_i' : 0.0,
+    'photon_phi_q_f' : 6.2831853,
+    'photon_y_i' : -3.,
+    'photon_y_f' :  3.,
+    'nrapidity' : 21 ,
+    'dilepton_mass_i' : 0.1,
+    'dilepton_mass_f' : 5.0,
+    'use_logarithmic_mass_grid' : 1,
+    'norder' : 7 ,
+    'differential_flag' : 1, 
+    'tau_start' : 0.2 ,
+    'tau_end' : 15.0,
+    'dTau' : 0.1,
+    'n_tau_cut' : 20,
+    'T_cuthigh' : 0.5,
+    'T_cutlow' : 0.1,
+    'nTcut': 20,
+    'calHGIdFlag': 0,
+    
+    'etaovers': 0.12,
+    'flag_prehydro': 0, 
+    'flag_hydro': 1, 
+    
+    'Hydro_2D': 0,
+    'USE_2D_mode':  0, 
+    'Hydro_etas_i': -3.,
+    'Hydro_etas_f':  3.,
+    'Hydro_netas_n': 21,
+
+
+
+}
+
 # iSS
 iss_dict = {
     'hydro_mode': 2,  # mode for reading in freeze out information
@@ -643,13 +714,15 @@ Parameters_list = [(ipglasma_dict, "input", 3), (kompost_dict, "setup.ini", 4),
                    (mcglauber_dict, "input", 0),
                    (music_dict, "music_input_mode_2", 2),
                    (photon_dict, "parameters.dat", 1),
+                   (dilepton_dict, "parameters.dat", 1),
                    (iss_dict, "iSS_parameters.dat", 1),
                    (hadronic_afterburner_toolkit_dict, "parameters.dat", 1)]
 
 path_list = [
     'model_parameters/IPGlasma/', 'model_parameters/KoMPoST/',
     'model_parameters/3dMCGlauber/', 'model_parameters/MUSIC/',
-    'model_parameters/photonEmission_hydroInterface/', 'model_parameters/iSS/',
+    'model_parameters/photonEmission_hydroInterface/',
+    'model_parameters/dileptonEmission_hydroInterface/', 'model_parameters/iSS/',
     'model_parameters/hadronic_afterburner_toolkit/'
 ]
 
@@ -719,9 +792,15 @@ def update_parameters_dict(par_dict_path, ran_seed):
     if 'compute_photon_emission' in parameters_dict.control_dict:
         if parameters_dict.control_dict['compute_photon_emission']:
             music_dict['output_evolution_data'] = 2
+    if 'compute_dilepton_emission' in parameters_dict.control_dict:
+        if parameters_dict.control_dict['compute_dilepton_emission']:
+            music_dict['output_evolution_data'] = 5
 
     if 'photon_dict' in dir(parameters_dict):
         photon_dict.update(parameters_dict.photon_dict)
+    
+    if 'dilepton_dict' in dir(parameters_dict):
+        dilepton_dict.update(parameters_dict.dilepton_dict)
 
     try:
         afterburner_type = parameters_dict.control_dict['afterburner_type']

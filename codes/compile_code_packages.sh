@@ -105,6 +105,22 @@ if [ $status -ne 0 ]; then
     exit $status
 fi
 
+# compile dileptonEmission_hydroInterface
+echo -e "${Green}compile dileptonEmission_hydroInterface ... ${NC}"
+(
+    cd dileptonEmission_hydroInterface_code
+    rm -fr build
+    mkdir -p build
+    cd build
+    CC=${CCFlag} CXX=${CXXFlag} cmake ..
+    make -j${number_of_cores_to_compile}
+    make install
+)
+status=$?
+if [ $status -ne 0 ]; then
+    exit $status
+fi
+
 # download iSS particle sampler
 echo -e "${Green}compile iSS ... ${NC}"
 (

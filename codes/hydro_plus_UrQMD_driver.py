@@ -23,7 +23,8 @@ def print_usage():
           + "n_hydro_events hydro_event_id n_UrQMD n_threads "
           + "save_ipglasma_flag save_kompost_flag save_hydro_flag "
           + "save_urqmd_flag seed_add tau0 compute_polarization_flag "
-          + "compute_photons_flag enableCheckPoint")
+          + "compute_photons_flag enableCheckPoint"
+          + "compute_dileptons_flag enableCheckPoint")
 
 
 def fecth_an_3DMCGlauber_smooth_event(database_path, iev):
@@ -325,6 +326,54 @@ def run_photon(final_results_folder, event_id):
     return (photon_success, photon_folder_name)
 
 
+def prepare_evolution_files_for_dilepton(final_results_folder, hydro_folder_name):
+    """This function prepares hydro evolution file for dilepton radiation"""
+    evoFileName = "evolution_all_xyeta.dat"
+    evo_file = path.join(final_results_folder, hydro_folder_name, evoFileName)
+    dileptonFolderPath = path.join('dileptonEmission_hydroInterface', 'results')
+    if path.exists(dileptonFolderPath):
+        shutil.rmtree(dileptonFolderPath)
+    mkdir(dileptonFolderPath)
+    call("ln -s {0:s} {1:s}".format(path.abspath(evo_file),
+                                    path.join(dileptonFolderPath, evoFileName)),
+         shell=True)
+    shutil.copy(
+        path.join(final_results_folder, hydro_folder_name, "music_input"),
+        dileptonFolderPath)
+
+
+def run_dilepton(final_results_folder, event_id):
+    """This functions run dilepton radiation"""
+    logo = "\U0001F3B6"
+    dilepton_folder_name = "dilepton_results_{}".format(event_id)
+    results_folder = path.join(final_results_folder, dilepton_folder_name)
+    dilepton_success = False
+
+    if path.exists(results_folder):
+        # check whether dilepton has already run or not
+        print("{} dilepton results {} exist ...".format(logo, dilepton_folder_name),
+              flush=True)
+        dilepton_success = True
+        if dilepton_success:
+            print("{} no need to rerun dilepton".format(logo), flush=True)
+        else:
+            print("{} dilepton radiation failed, rerun ...".format(logo),
+                  flush=True)
+            shutil.rmtree(results_folder)
+
+    if not dilepton_success:
+        curr_time = time.asctime()
+        print("\U0001F3B6  [{}] Run dilepton ... ".format(curr_time), flush=True)
+        call("bash ./run_dilepton.sh", shell=True)
+
+        dilepton_success = True
+        if dilepton_success:
+            # collect results
+            shutil.move("dileptonEmission_hydroInterface/results", results_folder)
+
+    return (dilepton_success, dilepton_folder_name)
+
+
 def prepare_surface_files_for_urqmd(final_results_folder, hydro_folder_name,
                                     n_urqmd):
     """This function prepares hydro surface for hadronic casade"""
@@ -498,9 +547,13 @@ def zip_results_into_hdf5(final_results_folder, event_id, para_dict):
         "Smu_Thermal_*.dat", "Rspin_*.dat"
     ]
 
+    dilepton_filepattern = ['*dilepton*.dat','*QGP_NLO_*']
+    
+
     hydrofolder = path.join(final_results_folder, f"hydro_results_{event_id}")
     spvnfolder = path.join(final_results_folder, results_name)
     photonFolder = path.join(final_results_folder, f"photon_results_{event_id}")
+    dileptonFolder = path.join(final_results_folder, f"dilepton_results_{event_id}")
 
     spinfolder = path.join(final_results_folder, f"spin_results_{event_id}")
 
@@ -558,6 +611,13 @@ def zip_results_into_hdf5(final_results_folder, event_id, para_dict):
                 for photonFile_i in photonFileList:
                     if path.isfile(photonFile_i):
                         shutil.move(photonFile_i, spvnfolder)
+
+        if para_dict['compute_dileptons']:
+            for ipattern in dilepton_filepattern:
+                dileptonFileList = glob(path.join(dileptonFolder, ipattern))
+                for dileptonFile_i in dileptonFileList:
+                    if path.isfile(dileptonFile_i):
+                        shutil.move(dileptonFile_i, spvnfolder)
 
         # save spin informaiton
         if para_dict["compute_polarization"]:
@@ -631,6 +691,11 @@ def remove_unwanted_outputs(final_results_folder, event_id, para_dict):
         photonfolder = path.join(final_results_folder,
                                  "photon_results_{}".format(event_id))
         shutil.rmtree(photonfolder, ignore_errors=True)
+
+    if para_dict["compute_dileptons"]:
+        dileptonfolder = path.join(final_results_folder,
+                                 "dilepton_results_{}".format(event_id))
+        shutil.rmtree(dileptonfolder, ignore_errors=True)
 
 
 def checkPoint(startTime, checkPointFileName, finalResultsFolder):
@@ -777,6 +842,22 @@ def main(para_dict_):
             if para_dict_["check_point_flag"]:
                 checkPoint(startTime, CHECKPOINT_FILENAME, final_results_folder)
 
+        if para_dict_['compute_dileptons']:
+            # if hydro finishes properly, we continue to do dilepton radiation
+            prepare_evolution_files_for_dilepton(final_results_folder,
+                                               hydro_folder_name)
+            dilepton_success, dilepton_folder_name = run_dilepton(
+                final_results_folder, event_id)
+            if not dilepton_success:
+                exitErrorTrigger = True
+                continue
+            if not para_dict["save_hydro"]:
+                evoFileName = path.join(final_results_folder, hydro_folder_name,
+                                        "evolution_all_xyeta.dat")
+                shutil.rmtree(evoFileName, ignore_errors=True)
+            if para_dict_["check_point_flag"]:
+                checkPoint(startTime, CHECKPOINT_FILENAME, final_results_folder)
+
         nUrQMDFolder = n_urqmd
         if para_dict_["compute_polarization"]:
             nUrQMDFolder += 1
@@ -831,8 +912,9 @@ if __name__ == "__main__":
         SEED_ADD = int(sys.argv[11])
         COMP_POLARIZATION = (sys.argv[12].lower() == "true")
         COMP_PHOTONS = (sys.argv[13].lower() == "true")
-        CHECK_POINT = (sys.argv[14].lower() == "true")
-        AFTERBURNER_TYPE = str(sys.argv[15])
+        COMP_DILEPTONS = (sys.argv[14].lower() == "true")
+        CHECK_POINT = (sys.argv[15].lower() == "true")
+        AFTERBURNER_TYPE = str(sys.argv[16])
     except IndexError:
         print_usage()
         sys.exit(0)
@@ -869,6 +951,7 @@ if __name__ == "__main__":
         'save_urqmd': SAVE_URQMD,
         'compute_polarization': COMP_POLARIZATION,
         'compute_photons': COMP_PHOTONS,
+        'compute_dileptons': COMP_DILEPTONS,
         'seed_add': SEED_ADD,
         'check_point_flag': CHECK_POINT,
         'afterburner_type': AFTERBURNER_TYPE,
