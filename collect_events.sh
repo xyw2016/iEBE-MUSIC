@@ -69,19 +69,17 @@ do
         if [ -e $kompost_file ]; then
             kompoststatus=true
         fi
-        if [ -a ${eventsPath}/${iev}/${spvn_folder_name}*${event_id}.h5 ]; then
-            if [ "$hydrostatus" = true ]; then
-                mv ${eventsPath}/${iev}/${hydro_folder_name}*${event_id} $target_hydro_folder
-            fi
-            if [ "$kompoststatus" = true ]; then
-                mv ${eventsPath}/${iev}/${kompost_folder_name}*${event_id} $target_kompost_folder
-            fi
-            if [ "$urqmdstatus" = true ]; then
-                mv ${eventsPath}/${iev}/${UrQMD_file_name}*${event_id}.gz $target_urqmd_folder
-            fi
-            mv ${eventsPath}/${iev}/${spvn_folder_name}*${event_id}.h5 $target_spvn_folder
-            ((collected_eventNum++))
+        if [ "$hydrostatus" = true ]; then
+            mv ${eventsPath}/${iev}/${hydro_folder_name}${event_id} $target_hydro_folder
         fi
+        if [ "$kompoststatus" = true ]; then
+            mv ${eventsPath}/${iev}/${kompost_folder_name}${event_id} $target_kompost_folder
+	fi
+        if [ "$urqmdstatus" = true ]; then
+            mv ${eventsPath}/${iev}/${UrQMD_file_name}${event_id}.gz $target_urqmd_folder
+        fi
+        mv ${eventsPath}/${iev}/${spvn_folder_name}${event_id}.h5 $target_spvn_folder
+        ((collected_eventNum++))
         ((total_eventNum++))
     done
 done
@@ -91,6 +89,6 @@ echo "Collected events number: " $collected_eventNum " out of " $total_eventNum
 if [ -f ${target_folder}/${folderName}.h5 ]; then
     mv ${target_folder}/${folderName}.h5 ${target_spvn_folder}
 fi
-./combine_multiple_hdf5.py ${target_spvn_folder}
-mv SPVN_RESULTS.h5 ${target_folder}/${folderName}.h5
+#./combine_multiple_hdf5.py ${target_spvn_folder}
+#mv SPVN_RESULTS.h5 ${target_folder}/${folderName}.h5
 #rm -fr $target_spvn_folder
