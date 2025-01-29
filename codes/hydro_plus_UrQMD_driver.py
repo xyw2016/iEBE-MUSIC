@@ -678,7 +678,11 @@ def main(para_dict_):
             filepath = initial_condition
             makedirs("MUSIC/initial", exist_ok=True)
             shutil.copy(path.join(filepath, filename),
-                        "MUSIC/initial/SMASH_ini.dat")
+                        "MUSIC/initial/ev.dat")
+            shutil.copy(path.join(filepath, re.sub("ev", "nb", filename)),
+                        "MUSIC/initial/nb.dat")
+            
+            
         # first run hydro
         hydro_success, hydro_folder_name = run_hydro_event(
             final_results_folder, event_id)

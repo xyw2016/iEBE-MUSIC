@@ -28,8 +28,8 @@ cd ..
 
 ## download MUSIC
 rm -fr MUSIC_code
-git clone --depth=1  https://github.com/xyw2016/MUSIC.git -b xyw_dev2 MUSIC_code
-commitHash="1394eddc9c3265de64ec22c8a28801d18fccb987"
+git clone --depth=1  https://github.com/xyw2016/MUSIC.git -b polx MUSIC_code
+commitHash="af68a5d3f50beff78e117e87afdaaafc5922415a"
 cd  MUSIC_code 
 git checkout $commitHash
 rm -fr MUSIC_code/.git

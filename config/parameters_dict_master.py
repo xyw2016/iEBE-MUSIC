@@ -269,6 +269,7 @@ music_dict = {
 
     # read in initial conditions from external file (Initial_profile == 9x)
     'Initial_Distribution_input_filename': 'initial/epsilon-u-Hydro.dat',
+    'Initial_Rhob_Distribution_input_filename': 'initial/epsilon-u-Hydro.dat',
     's_factor': 0.190,      # normalization factor read in initial data file
     'e_factor': 1.0,
     'e_Norm': 1.15,
