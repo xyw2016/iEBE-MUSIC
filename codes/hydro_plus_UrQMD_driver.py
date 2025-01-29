@@ -40,8 +40,8 @@ def fecth_a_SMASH_initial_event(database_path, iev):
     return (filelist[iev])
 
 
-def get_initial_condition(database, initial_type, iev, seed_add,
-                          final_results_folder, time_stamp_str="0.4"):
+def get_initial_condition(database, initial_type, iev, use_averaged_smash, n_urqmd,
+                          seed_add, final_results_folder, time_stamp_str="0.4"):
     """This funciton get initial conditions"""
     if "IPGlasma" in initial_type:
         ipglasma_local_folder = "ipglasma/ipglasma_results"
@@ -99,18 +99,57 @@ def get_initial_condition(database, initial_type, iev, seed_add,
         file_name = fecth_an_3DMCGlauber_smooth_event(database, iev)
         return file_name
     elif initial_type == "SMASH_initial":
-        if database == "self":
-            file_name = "SMASH_ini.dat"
+        if database == "self": # run smash on the fly
+            if not use_averaged_smash:
+                n_smashini = 1
+            else: # construct initial condition by averaging over multiple smash events
+                n_smashini = n_urqmd
+
+            file_name = "MUSIC/initial/SMASH_ini.dat"
             if not path.exists(file_name):
-                run_smashini_event(final_results_folder)
-                call("mv smash_initial/smash_init_results/{0:s} {0:s}".format(file_name),
-                     shell=True)
+
+                run_smashini_shell(n_smashini, final_results_folder, iev)
+                
+                part2s_input = "./part2s/input"
+                if not os.path.exists(part2s_input):
+                    os.makedirs(part2s_input)
+                for ies in range(n_smashini):
+                    call("./part2s/convert_to_binary_SMASH_ini.e "
+                         + "SMASHini_{}/smash_init_results/SMASH_IC.oscar ./part2s/input/SMASH_ini.binary".format(ies),
+                         shell=True)
+
+                    call("rm SMASHini_{}/smash_init_results/SMASH_IC.oscar".format(ies), shell=True)
+
+                run_part2s_event(iev)
+
+                makedirs("MUSIC/initial", exist_ok=True)
+
+                shutil.copy("part2s/SMASH_ini.dat", "MUSIC/initial/SMASH_ini.dat")
+
+                shutil.move("part2s/SMASH_ini.dat", "part2s/part2s_results/SMASH_ini.dat")
+
+                part2s_source_folder = "part2s/part2s_results"
+                part2s_destination_folder = path.join(final_results_folder, "part2s_results_{}".format(iev))
+
+                if not os.path.exists(part2s_destination_folder):
+                    os.makedirs(part2s_destination_folder)
+
+                for filename in os.listdir(part2s_source_folder):
+                    part2s_source_file = os.path.join(part2s_source_folder, filename)
+                    if os.path.isfile(part2s_source_file):
+                        part2s_destination_file = os.path.join(part2s_destination_folder, filename)
+                        shutil.move(part2s_source_file, part2s_destination_file)
+
+                # shutil.move("part2s/part2s_results", path.join(final_results_folder, "part2s_results_{}".format(event_id)))
+
+                call("rm {}/SMASH_ini.binary".format(part2s_input), shell=True)
+
             else:
-                print("SMASH_initial event exists ...")
+                print("SMASH_initial event exists in MUSIC/initial/ ...")
                 print("No need to rerun ...")
-            makedirs("MUSIC/initial", exist_ok=True)
-            shutil.copy(file_name, "MUSIC/initial/SMASH_ini.dat")
-        else:
+
+            return file_name
+        else: # use pregenerated smash initial condition
             file_name = fecth_a_SMASH_initial_event(database, iev)
             return file_name
     else:
@@ -120,9 +159,32 @@ def get_initial_condition(database, initial_type, iev, seed_add,
         exit(1)
 
 
-def run_smashini_event(final_results_folder):
+def run_smashini_event(event_id):
     """This function runs smash as initial condition"""
-    call("bash ./run_smash_initial.sh", shell=True)
+    call("bash ./run_smash_initial.sh {0:d}".format(event_id), shell=True)
+
+
+def run_smashini_shell(n_smashini, final_results_folder, event_id):
+    """This function runs smash initial events in parallel"""
+    logo = "\U0001F5FF"
+    smashini_results_name = "SMASH_ini.binary"
+    smashini_success = False
+
+    if path.exists(smashini_results_name):
+        print("{} SMASH initial results {} exist ... ".format(logo, smashini_results_name),
+              flush=True)
+        smashini_success = True
+
+    if not smashini_success:
+        curr_time = time.asctime()
+        print("{}  [{}] Running SMASH initial ... ".format(logo, curr_time), flush=True)
+        with Pool(processes=n_smashini) as pool1:
+            pool1.map(run_smashini_event, range(n_smashini))
+
+
+def run_part2s_event(event_id):
+    """This function runs part2s to smear smash particles to construct initial conditions"""
+    call("bash ./run_part2s.sh {0:d}".format(event_id), shell=True)
 
 
 def run_ipglasma(iev):
@@ -508,20 +570,6 @@ def zip_spvn_results_into_hdf5(final_results_folder, event_id, para_dict):
                     if path.isfile(prefile):
                         shutil.move(prefile, spvnfolder)
 
-            # save smash initial conditions
-            if ("SMASH_initial" in para_dict['initial_type'] and para_dict['initial_condition'] == "self"
-                    and para_dict['save_smash_ini']):
-                smash_initial_folder = path.join(
-                    final_results_folder,
-                    "smash_initial_results_{}".format(event_id))
-
-                smash_inifile = path.join(smash_initial_folder, 'particle_lists.oscar')
-                if path.isfile(smash_inifile):
-                    shutil.move(smash_inifile, spvnfolder)
-
-                smash_inifile = path.join(smash_initial_folder, 'SMASH_IC.oscar')
-                if path.isfile(smash_inifile):
-                    shutil.move(smash_inifile, spvnfolder)
 
         hf = h5py.File("{0}.h5".format(results_name), "w")
         gtemp = hf.create_group("{0}".format(results_name))
@@ -569,6 +617,11 @@ def remove_unwanted_outputs(final_results_folder,
                                   "kompost_results_{}".format(event_id))
         shutil.rmtree(kompostfolder, ignore_errors=True)
 
+    if not save_smash_ini:
+        smashinifolder = path.join(final_results_folder,
+                                  "part2s_results_{}".format(event_id))
+        shutil.rmtree(smashinifolder, ignore_errors=True)    
+
     if not save_hydro:
         hydrofolder = path.join(final_results_folder,
                                 "hydro_results_{}".format(event_id))
@@ -589,6 +642,8 @@ def main(para_dict_):
     print("\U0001F3CE  [{}] Number of threads: {}".format(
         curr_time, num_threads),
           flush=True)
+
+    use_averaged_smash = para_dict_['use_averaged_smash']
 
     use_is3d = para_dict_['use_is3d']
     is3d_continuous = para_dict_['is3d_continuous']
@@ -636,7 +691,7 @@ def main(para_dict_):
 
         # run a dynamic initial model or fetch pregernated profiles from database
         ifile = get_initial_condition(initial_condition, initial_type,
-                                      iev,
+                                      iev, use_averaged_smash, n_urqmd,
                                       para_dict_['seed_add'],
                                       final_results_folder,
                                       para_dict_['time_stamp_str'])
@@ -681,8 +736,6 @@ def main(para_dict_):
                         "MUSIC/initial/ev.dat")
             shutil.copy(path.join(filepath, re.sub("ev", "nb", filename)),
                         "MUSIC/initial/nb.dat")
-            
-            
         # first run hydro
         hydro_success, hydro_folder_name = run_hydro_event(
             final_results_folder, event_id)
@@ -777,15 +830,16 @@ if __name__ == "__main__":
         HYDRO_EVENT_ID0 = int(sys.argv[4])
         N_URQMD = int(sys.argv[5])
         N_THREADS = int(sys.argv[6])
-        SAVE_SMASHINI = (sys.argv[7].lower() == "true")
-        SAVE_IPGLASMA = (sys.argv[8].lower() == "true")
-        SAVE_KOMPOST = (sys.argv[9].lower() == "true")
-        SAVE_HYDRO = (sys.argv[10].lower() == "true")
-        SAVE_URQMD = (sys.argv[11].lower() == "true")
-        USE_IS3D = (sys.argv[12].lower() == "true")
-        IS3D_CONTINUOUS = (sys.argv[13].lower() == "true")
-        SEED_ADD = int(sys.argv[14])
-        TIME_STAMP = str(sys.argv[15])
+        AVERAGE_SMASH = (sys.argv[7].lower() == "true")
+        SAVE_SMASHINI = (sys.argv[8].lower() == "true")
+        SAVE_IPGLASMA = (sys.argv[9].lower() == "true")
+        SAVE_KOMPOST = (sys.argv[10].lower() == "true")
+        SAVE_HYDRO = (sys.argv[11].lower() == "true")
+        SAVE_URQMD = (sys.argv[12].lower() == "true")
+        USE_IS3D = (sys.argv[13].lower() == "true")
+        IS3D_CONTINUOUS = (sys.argv[14].lower() == "true")
+        SEED_ADD = int(sys.argv[15])
+        TIME_STAMP = str(sys.argv[16])
     except IndexError:
         print_usage()
         exit(0)
@@ -808,6 +862,7 @@ if __name__ == "__main__":
         'hydro_id0': HYDRO_EVENT_ID0,
         'n_urqmd': N_URQMD,
         'num_threads': N_THREADS,
+        'use_averaged_smash': AVERAGE_SMASH,
         'save_smash_ini': SAVE_SMASHINI,
         'save_ipglasma': SAVE_IPGLASMA,
         'save_kompost': SAVE_KOMPOST,

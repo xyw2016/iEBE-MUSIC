@@ -13,7 +13,8 @@ control_dict = {
     'initial_state_type': "3DMCGlauber_dynamical",  # options: IPGlasma, IPGlasma+KoMPoST,
                                                     #          3DMCGlauber_dynamical, 3DMCGlauber_consttau
     'walltime': "10:00:00",  # walltime to run
-    'use_iS3D': False,               # flag to use iS3D as sampler
+    'use_iS3D': True,               # flag to use iS3D as sampler
+    'use_SMASH_afterburner': True,    # flag to use SMASH as afterburner
     'save_ipglasma_results': False,   # flag to save IPGlasma results
     'save_kompost_results': False,    # flag to save kompost results
     'save_smashini_results': False,   # flag to save smash initial results
@@ -24,7 +25,8 @@ control_dict = {
 
 # SMASH initial condition
 smashini_dict =  {
-    'database_name_pattern': 'self',#"SMASH_database/SMASH_7.7",
+    'database_name_pattern': 'self',  # "SMASH_database/SMASH_7.7",
+    'use_averaged_smash': False,       # average over smash events to construct initial condition
     'default': 'INFO',
     'Modus': 'Collider',
     'Time_Step_Mode': 'Fixed',
@@ -37,30 +39,35 @@ smashini_dict =  {
     'Format': 'Oscar2013',
     'E_Kin': 1.23,
     'Fermi_Motion': 'frozen',
+    'b_min': 0.0228994, 
+    'b_max': 3.37646,
+    'ecm': 7.7,
 }
 
 
 part2s_dict = {
-    'PATHIN':   'test_pre3',
+    'PATHIN':   'input/ini.bin',
     'PATHOUT':  'output',
 
     'NX':   201,
     'NY':   201,
-    'NZ':   201,
     'NETA': 201,
 
     'DX':   0.15,
     'DY':   0.15,
-    'DZ':   0.15,
     'DETA': 0.15,
 
 
-    'SIGR': 0.6,
-    'SIGZ': 0.6,
-    'SIGETA':   0.6,
+    'SIGR':  0.6,
+    'SIGETA': 0.6,
 
+    'TAU00': 0.0,
+    'TAU0' : 3.2,
+    'NTAU' : 10,
+    'EOS_ID' : 12,
 
-    'TAU0' :    3.2,
+    'read_binary': 1,
+
 }
 
 
@@ -198,6 +205,7 @@ mcglauber_dict = {
     'tau_form_mean': 0.5,
     'tau_form_fluct_gamma_beta': 1.0,
 }
+
 
 # KoMPoST
 kompost_dict = {
@@ -480,6 +488,10 @@ is3d_dict = {
                                     #   2 = smash           (goes up to Υ(3S))
                                     #   3 = smash box       (smash box: no decay info now, so can't do resdecays)   (what is this?)
 
+    'afterburner_type': 2,          #   1 = urqmd
+                                    #   2 = smash
+                                    #   should match hrg_eos                               
+
     'dimension': 3,                 # dimensionality of the freezeout surface
                                     #   2 = boost-invariant 2+1d
                                     #   3 = non boost-invariant 3+1d
@@ -522,10 +534,13 @@ is3d_dict = {
     'min_num_hadrons': 1.0e+7,        # across all samples >= min_num_hadrons
     'max_num_samples': 1.0e+3,        # oversampling will finish after this number of samples
 
+    'fix_oversample_num_flag': 1,     # switch to specify the number of samples (SMASH needs to know Nevents)
+    'oversample_num':   1.0e+3,       # oversampling will finish after this number of samples (Nevents for SMASH afterburner)
+
     'sampler_seed': 1,                # sets seed of particle sampler. If sampler_seed < 0, seed is set using clocktime
 
     'test_sampler': 1,                # perform sampler test only (i.e. write sampled pT spectra and vn to file only)
-                                      # set to zero for actual runs
+                                      # set to zero for actual runs, chosen particles are pikp only when on
 
     'pT_min': 0.0,                    # pT min in GeV (for sampler tests)
     'pT_max': 3.0,                    # pT max in GeV
@@ -554,10 +569,30 @@ is3d_dict = {
 
 }
 
+
 # urqmd afterburner
 urqmd_dict = {
     'run_collisionless': 0,         # flag to run afterburner without collisions
 }
+
+
+# SMASH afterburner
+smash_dict =  {
+    'default': 'INFO',
+    'Modus': 'List',
+    'Time_Step_Mode': 'None',
+    'Delta_Time': 0.1,
+    'End_Time': 50.0,                 
+    'Randomseed': -1,
+    'Nevents': 1,                     # overwritten by 'oversample_num' in iS3D
+    'Output_Interval': 10.0,
+    'Format': 'Oscar2013',
+    'File_Directory': "./input/list",
+    'File_Prefix': "particle_list_osc",
+    'Shift_Id': 0,
+    'Extended': 'False',
+}
+
 
 # hadronic afterburner toolkit
 hadronic_afterburner_toolkit_dict = {
@@ -569,6 +604,7 @@ hadronic_afterburner_toolkit_dict = {
                         # 3: reads outputs from Sangwook's UrQMD outputs 
                         #    (without header lines)
                         # 4: reads outputs from UrQMD 3.3p2 outputs
+                        # 7: read_in_particle_samples_SMASH_gzipped
                         # 10: reads outputf from gzip outputs
     'analyze_flow': 1,                  # 0/1: flag to perform flow analysis
     'analyze_HBT': 0,                   # 0/1: flag to perform HBT analysis
@@ -660,8 +696,10 @@ Parameters_list = [
     (music_dict, "music_input_mode_2", 2),
     (iss_dict, "iSS_parameters.dat", 1),
     (is3d_dict, "iS3D_parameters.dat", 1),
+    (smash_dict, "config.yaml", 7),
     (hadronic_afterburner_toolkit_dict, "parameters.dat", 1)
 ]
+
 
 path_list = [
     'model_parameters/SMASH_ini/',
@@ -672,6 +710,7 @@ path_list = [
     'model_parameters/MUSIC/',
     'model_parameters/iSS/',
     'model_parameters/iS3D/',
+    'model_parameters/SMASH/',
     'model_parameters/hadronic_afterburner_toolkit/'
 ]
 
@@ -750,6 +789,16 @@ def update_parameters_dict(par_dict_path, ran_seed):
         parameters_dict.music_dict['Initial_time_tau_0'] = (
                 smashini_dict['Proper_Time'] )
 
+        parameters_dict.music_dict['Grid_size_in_x']   =   part2s_dict['NX']
+        parameters_dict.music_dict['Grid_size_in_y']   =   part2s_dict['NY']
+        parameters_dict.music_dict['Grid_size_in_eta'] =   part2s_dict['NETA']
+
+        parameters_dict.music_dict['X_grid_size_in_fm'] =   (part2s_dict['NX'] - 1)   * part2s_dict['DX']
+        parameters_dict.music_dict['Y_grid_size_in_fm'] =   (part2s_dict['NY'] - 1)   * part2s_dict['DY']
+        parameters_dict.music_dict['Eta_grid_size']     =   (part2s_dict['NETA'] - 1) * part2s_dict['DETA']
+
+        parameters_dict.music_dict['EOS_to_use'] = part2s_dict['EOS_ID']
+
     if parameters_dict.music_dict['boost_invariant'] == 1:
         parameters_dict.iss_dict['hydro_mode'] = 1
         parameters_dict.is3d_dict['dimension'] = 2
@@ -758,11 +807,14 @@ def update_parameters_dict(par_dict_path, ran_seed):
         parameters_dict.is3d_dict['dimension'] = 3
 
 
+    parameters_dict.smash_dict['Nevents'] = parameters_dict.is3d_dict['oversample_num']
+
     music_dict.update(parameters_dict.music_dict)
     iss_dict.update(parameters_dict.iss_dict)
     iss_dict['randomSeed'] = ran_seed
     is3d_dict.update(parameters_dict.is3d_dict)
     is3d_dict['sampler_seed'] = ran_seed
+    smash_dict.update(parameters_dict.smash_dict)
     hadronic_afterburner_toolkit_dict.update(
         parameters_dict.hadronic_afterburner_toolkit_dict)
     hadronic_afterburner_toolkit_dict['randomSeed'] = ran_seed
@@ -816,7 +868,7 @@ def output_parameters_to_files(workfolder="."):
         elif itype == 3:
             f.write("EndOfFile")
             
-        # smash input config.yaml    
+        # smash initial condition input config.yaml    
         if itype == 5: 
             f.write("""Version: 1.8
 Logging:
@@ -848,14 +900,43 @@ Modi:
             Particles: {{2212: 79, 2112: 118}}
         Target:
             Particles: {{2212: 79, 2112: 118}}
-        Sqrtsnn: 7.7
+        Sqrtsnn: {7:f}
         Calculation_Frame: "center of velocity"
         Impact:
-            Range: [0.0228994, 3.37646]
+            Range: [{5:f}, {6:f}]
         
         Fermi_Motion: "frozen"
         Collisions_Within_Nucleus: false
-""".format(parameters_dict['Delta_Time'], parameters_dict['End_Time'], parameters_dict['Randomseed'], parameters_dict['Nevents'], parameters_dict['Proper_Time']))
+""".format(parameters_dict['Delta_Time'], parameters_dict['End_Time'], parameters_dict['Randomseed'], parameters_dict['Nevents'], 
+        parameters_dict['Proper_Time'], parameters_dict['b_min'], parameters_dict['b_max'], parameters_dict['ecm']))
+        
+
+        # smash afterburner input config.yaml    
+        if itype == 7: 
+            f.write("""Logging:
+  default: INFO
+
+General:
+    Modus:         List
+    Time_Step_Mode: None
+    Delta_Time:     {0:f}
+    End_Time:       {1:f}
+    Randomseed:     {2:d}
+    Nevents:        {3:d}
+
+Output:
+  Output_Interval: {4:f}
+  Particles:
+        Format:    ["Oscar2013"]
+        Extended: {8:s}
+
+Modi:
+    List:
+        File_Directory: "{5:s}"
+        File_Prefix: "{6:s}"
+        Shift_Id: {7:d}
+""".format(parameters_dict['Delta_Time'], parameters_dict['End_Time'], parameters_dict['Randomseed'], parameters_dict['Nevents'], parameters_dict['Output_Interval'], 
+    parameters_dict['File_Directory'], parameters_dict['File_Prefix'], parameters_dict['Shift_Id'], parameters_dict['Extended']))
         
         f.close()
 

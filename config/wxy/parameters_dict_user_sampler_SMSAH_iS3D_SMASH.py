@@ -9,62 +9,61 @@
 control_dict = {
     'initial_state_type': "SMASH_initial",
     'walltime': "8:30:00",          # walltime to run
-    'use_iS3D': False,               # flag to use iS3D as sampler
+    'use_iS3D': True,               # flag to use iS3D as sampler
+    'use_SMASH_afterburner': True,    # flag to use SMASH as afterburner
+    'save_ipglasma_results': False,   # flag to save IPGlasma results
+    'save_kompost_results': False,    # flag to save kompost results
     'save_smashini_results': True,   # flag to save smash initial results
-    'save_hydro_surfaces': True,    # flag to save hydro surfaces
-    'save_UrQMD_files': False,      # flag to save UrQMD files
+    'save_hydro_surfaces': True,     # flag to save hydro surfaces
+    'save_UrQMD_files': False,        # flag to save UrQMD files
 }
 
 
 # SMASH initial condition
 smashini_dict =  {
-    'database_name_pattern': 'self',  # 1. self (on the fly) 2. "SMASH_database/SMASH_7.7" (pregenerated)
-    'use_averaged_smash': True,       # average over smash events to construct initial condition
+    'database_name_pattern': 'self',  # "SMASH_database/SMASH_7.7",
+    'use_averaged_smash': False,       # average over smash events to construct initial condition
     'default': 'INFO',
     'Modus': 'Collider',
-    'ecm': 7.7,
     'Time_Step_Mode': 'Fixed',
     'Delta_Time': 0.1,
-    'End_Time': 200.0,
+    'End_Time': 2000.0,
     'Proper_Time': 3.2,
     'Randomseed': -1,
-    'Nevents': 1,
+    'Nevents': 50,
     'Output_Interval': 10.0,
     'Format': 'Oscar2013',
     'E_Kin': 1.23,
     'Fermi_Motion': 'frozen',
     'b_min': 0.0228994, 
     'b_max': 3.37646,
+    'ecm': 7.7,
 }
 
-
 part2s_dict = {
-    'PATHIN':   '../SMASH_evo.binary',
-    'PATHIN2':   '../SMASH_ini.binary',
+    'PATHIN':   'input/SMASH_ini.binary',
     'PATHOUT':  './',
 
-    'NX':   201,
-    'NY':   201,
-    'NZ':   201,
-    'NETA': 61,
+    'NX':   101,
+    'NY':   101,
+    'NETA': 101,
 
     'DX':   0.3,
     'DY':   0.3,
-    'DZ':   0.3,
-    'DETA': 0.15,
-
-    'SIGR': 1.0,
-    'SIGZ': 0.4,
-    'SIGETA': 0.4,
+    'DETA': 0.3,
 
 
-    'TAU0' :    3.2, # over-written by Proper_Time in smash dict
+    'SIGR':  0.6,
+    'SIGETA': 0.6,
 
+    'TAU00': 0.0,
+    'TAU0' : 3.2,
+    'NTAU' : 10,
     'EOS_ID' : 12,
 
     'read_binary': 1,
-}
 
+}
 
 # MUSIC
 music_dict = {
@@ -75,7 +74,6 @@ music_dict = {
     'Initial_TB_Distribution_Filename': 'initial/initial_TB.dat',
     'Initial_rhob_TA_Distribution_Filename': 'initial/initial_TA.dat',
     'Initial_rhob_TB_Distribution_Filename': 'initial/initial_TB.dat',
-    'Initial_Distribution_input_filename':  'initial/SMASH_ini.dat',
 
     # parameters for the eta profiles in entropy density and net baryon density
     'ecm': 7.7,                    # collision energy
@@ -92,7 +90,7 @@ music_dict = {
     'eta_rhob_width_1': 0.07,        # Gaussian width for |eta| > |eta_0|
     'eta_rhob_width_2': 0.75,        # Gaussian width for |eta| < |eta_0|
     
-    'Initial_time_tau_0': 3.6,      # starting time of the hydrodynamic evolution (fm/c) [overwritten by smash runtime]
+    'Initial_time_tau_0': 3.6,      # starting time of the hydrodynamic evolution (fm/c)
                                     # max(tau_overlap, tau_0)
     'Delta_Tau': 0.010,             # time step to use in the evolution [fm/c]
     'boost_invariant':  0,          # whether the simulation is boost-invariant
@@ -105,7 +103,7 @@ music_dict = {
                                     # [-X_grid_size_in_fm/2, X_grid_size_in_fm/2]
     'Grid_size_in_x': 261,          # number of the grid points in x direction
     'Grid_size_in_y': 261,          # number of the grid points in y direction
-    'EOS_to_use': 12,               # type of the equation of state
+    'EOS_to_use': 14,               # type of the equation of state
                                     # 14: neos_BQS lattice EoS at finite mu_B
                                     # 17: BEST lattice EoS at finite mu_B
     # transport coefficients
@@ -179,11 +177,13 @@ is3d_dict = {
     'partial_surface_tau_min': 0.0,
     'partial_surface_tau_max': 2.05,
 
-    'hrg_eos': 1,                     # determines what PDG file to read in (chosen particles must be subset of selected PDG!)
+    'hrg_eos': 2,                     # determines what PDG file to read in (chosen particles must be subset of selected PDG!)
                                       #   1 = urqmd v3.3+     (goes up to n-2250)
                                       #   2 = smash           (goes up to Υ(3S))
                                       #   3 = smash box       (smash box: no decay info now, so can't do resdecays)   (what is this?)
 
+    'afterburner_type': 2,            #   1 = urqmd
+                                      #   2 = smash                               
     'dimension': 3,                   # dimensionality of the freezeout surface
                                       #   2 = boost-invariant 2+1d
                                       #   3 = non boost-invariant 3+1d
@@ -212,6 +212,8 @@ is3d_dict = {
 
     'min_num_hadrons': 1.0e+7,        # across all samples >= min_num_hadrons
     'max_num_samples': 1.0e+3,        # oversampling will finish after this number of samples
+    'fix_oversample_num_flag': 1,     # switch to specify the number of samples (SMASH needs to know Nevents)
+    'oversample_num':   1000,       # oversampling will finish after this number of samples (Nevents for SMASH afterburner)
 
     'sampler_seed': -1,                # sets seed of particle sampler. If sampler_seed < 0, seed is set using clocktime
 
@@ -232,10 +234,26 @@ is3d_dict = {
 
 }
 
-# urqmd afterburner
 urqmd_dict = {
     'run_collisionless': 0,         # flag to run afterburner without collisions
 }
+
+smash_dict =  {
+    'default': 'INFO',
+    'Modus': 'List',
+    'Time_Step_Mode': 'None',
+    'Delta_Time': 0.1,
+    'End_Time': 5000.0,                 
+    'Randomseed': -1,
+    'Nevents': 1,                     # overwritten by 'oversample_num' in iS3D
+    'Output_Interval': 10.0,
+    'Format': 'Oscar2013',
+    'File_Directory': "./",
+    'File_Prefix': "particle_list_osc",
+    'Shift_Id': 0,
+    'Extended': 'True',
+}
+
 
 # hadronic afterburner toolkit
 hadronic_afterburner_toolkit_dict = {
