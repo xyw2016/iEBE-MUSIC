@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-module load cmake/3.17.2
-
 Green='\033[0;32m'
 NC='\033[0m'
 
@@ -30,17 +28,17 @@ number_of_cores_to_compile=$(( ${number_of_cores} > 10 ? 10 : ${number_of_cores}
 #fi
 
 # compile IPGlasma
-# echo -e "${Green}compile IPGlasma ... ${NC}"
-# (
+#echo -e "${Green}compile IPGlasma ... ${NC}"
+#(
 #     cd ipglasma_code
 #     ./compile_IPGlasma.sh
-# )
-# status=$?
-# if [ $status -ne 0 ]; then
+#)
+#status=$?
+#if [ $status -ne 0 ]; then
 #     exit $status
-# fi
+#fi
 
-# compile KoMPoST
+## compile KoMPoST
 #echo -e "${Green}compile KoMPoST ... ${NC}"
 #(
 #    cd kompost_code
@@ -50,6 +48,28 @@ number_of_cores_to_compile=$(( ${number_of_cores} > 10 ? 10 : ${number_of_cores}
 #if [ $status -ne 0 ]; then
 #    exit $status
 #fi
+##
+
+# compile pre_equlibrium_smash (called part2s in the workflow)
+echo -e "${Green}compile part2s ... ${NC}"
+(
+    cd part2s_code
+    mkdir -p build
+    cd build
+    cmake ..
+    make install
+    cd ../script
+    g++ convert_to_binary_SMASH_ini.cpp -lz -o convert_to_binary_SMASH_ini.e
+    mv convert_to_binary_SMASH_ini.e ../
+)
+status=$?
+if [ $status -ne 0 ]; then
+    exit $status
+fi
+mkdir -p part2s
+cp part2s_code/convert_to_binary_SMASH_ini.e part2s/
+cp part2s_code/test.ini part2s/
+
 
 # compile MUSIC
 echo -e "${Green}compile MUSIC ... ${NC}"
@@ -70,6 +90,7 @@ cp MUSIC_code/example_inputfiles/IPGlasma_2D/music_input_mode_2 MUSIC/
 cp MUSIC_code/utilities/sweeper.sh MUSIC/
 (cd MUSIC; mkdir -p initial)
 
+
 # download iSS particle sampler
 echo -e "${Green}compile iSS ... ${NC}"
 (
@@ -84,6 +105,8 @@ status=$?
 if [ $status -ne 0 ]; then
     exit $status
 fi
+mkdir -p iSS
+cp iSS_code/iSS_parameters.dat iSS/
 
 # download UrQMD afterburner
 echo -e "${Green}compile UrQMD ... ${NC}"
@@ -102,7 +125,7 @@ cp urqmd_code/urqmd/runqmd.sh urqmd/
 cp urqmd_code/urqmd/uqmd.burner urqmd/
 
 
-# download hadronic afterner
+ # download hadronic afterner
 echo -e "${Green}compile hadronic afterburner toolkit ... ${NC}"
 (
     cd hadronic_afterburner_toolkit_code
@@ -114,6 +137,8 @@ echo -e "${Green}compile hadronic afterburner toolkit ... ${NC}"
     cd ../ebe_scripts
     g++ convert_to_binary.cpp -lz -o convert_to_binary.e
     mv convert_to_binary.e ../
+    g++ convert_to_binary_SMASH.cpp -lz -o convert_to_binary_SMASH.e
+    mv convert_to_binary_SMASH.e ../
     g++ concatenate_binary_files.cpp -lz -o concatenate_binary_files.e
     mv concatenate_binary_files.e ../
 )
@@ -123,6 +148,7 @@ if [ $status -ne 0 ]; then
 fi
 mkdir -p hadronic_afterburner_toolkit
 cp hadronic_afterburner_toolkit_code/convert_to_binary.e hadronic_afterburner_toolkit/
+cp hadronic_afterburner_toolkit_code/convert_to_binary_SMASH.e hadronic_afterburner_toolkit/
 cp hadronic_afterburner_toolkit_code/concatenate_binary_files.e hadronic_afterburner_toolkit/
 cp hadronic_afterburner_toolkit_code/parameters.dat hadronic_afterburner_toolkit/
 cp hadronic_afterburner_toolkit_code/ebe_scripts/average_event_HBT_correlation_function.py hadronic_afterburner_toolkit/
