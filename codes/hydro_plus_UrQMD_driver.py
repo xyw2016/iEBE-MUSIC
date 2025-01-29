@@ -36,7 +36,7 @@ def fecth_a_SMASH_initial_event(database_path, iev):
     """This function returns the filename of an initial condition in the
        database_path folder
     """
-    filelist = glob(path.join(database_path, 'SMASH_ini.dat'))
+    filelist = glob(path.join(database_path, 'ev_*.dat'))
     return (filelist[iev])
 
 

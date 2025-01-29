@@ -806,15 +806,16 @@ def update_parameters_dict(par_dict_path, ran_seed):
         parameters_dict.iss_dict['hydro_mode'] = 2
         parameters_dict.is3d_dict['dimension'] = 3
 
-
-    parameters_dict.smash_dict['Nevents'] = parameters_dict.is3d_dict['oversample_num']
+    if parameters_dict.control_dict['use_SMASH_afterburner']:
+        parameters_dict.smash_dict['Nevents'] = parameters_dict.is3d_dict['oversample_num']
 
     music_dict.update(parameters_dict.music_dict)
     iss_dict.update(parameters_dict.iss_dict)
     iss_dict['randomSeed'] = ran_seed
     is3d_dict.update(parameters_dict.is3d_dict)
     is3d_dict['sampler_seed'] = ran_seed
-    smash_dict.update(parameters_dict.smash_dict)
+    if parameters_dict.control_dict['use_SMASH_afterburner']:
+        smash_dict.update(parameters_dict.smash_dict)
     hadronic_afterburner_toolkit_dict.update(
         parameters_dict.hadronic_afterburner_toolkit_dict)
     hadronic_afterburner_toolkit_dict['randomSeed'] = ran_seed
