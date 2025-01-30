@@ -770,34 +770,35 @@ def update_parameters_dict(par_dict_path, ran_seed):
             parameters_dict.music_dict['Include_Rhob_Yes_1_No_0'] = 1
     elif initial_condition_type == "SMASH_initial":
         smashini_dict.update(parameters_dict.smashini_dict)
+        
+        if smashini_dict['database_name_pattern']=="self":
+            # set random seed for smash
+            smashini_dict['Randomseed'] = ran_seed
 
-        # set random seed for smash
-        smashini_dict['Randomseed'] = ran_seed
+            # parameters for part2s
+            part2s_dict.update(parameters_dict.part2s_dict)
+            part2s_dict['TAU0'] = smashini_dict['Proper_Time']
 
-        # parameters for part2s
-        part2s_dict.update(parameters_dict.part2s_dict)
-        part2s_dict['TAU0'] = smashini_dict['Proper_Time']
+            # match some MUSIC parameters with initial condition parameters
+            if 'Initial_profile' not in parameters_dict.music_dict:
+                parameters_dict.music_dict['Initial_profile'] = 21
+            if 'Initial_Distribution_input_filename' not in parameters_dict.music_dict:
+                parameters_dict.music_dict[
+                    'Initial_Distribution_input_filename'] = (
+                            'initial/SMASH_ini.dat')
 
-        # match some MUSIC parameters with initial condition parameters
-        if 'Initial_profile' not in parameters_dict.music_dict:
-            parameters_dict.music_dict['Initial_profile'] = 21
-        if 'Initial_Distribution_input_filename' not in parameters_dict.music_dict:
-            parameters_dict.music_dict[
-                'Initial_Distribution_input_filename'] = (
-                        'initial/SMASH_ini.dat')
+            parameters_dict.music_dict['Initial_time_tau_0'] = (
+                    smashini_dict['Proper_Time'] )
 
-        parameters_dict.music_dict['Initial_time_tau_0'] = (
-                smashini_dict['Proper_Time'] )
+            parameters_dict.music_dict['Grid_size_in_x']   =   part2s_dict['NX']
+            parameters_dict.music_dict['Grid_size_in_y']   =   part2s_dict['NY']
+            parameters_dict.music_dict['Grid_size_in_eta'] =   part2s_dict['NETA']
 
-        parameters_dict.music_dict['Grid_size_in_x']   =   part2s_dict['NX']
-        parameters_dict.music_dict['Grid_size_in_y']   =   part2s_dict['NY']
-        parameters_dict.music_dict['Grid_size_in_eta'] =   part2s_dict['NETA']
+            parameters_dict.music_dict['X_grid_size_in_fm'] =   (part2s_dict['NX'] - 1)   * part2s_dict['DX']
+            parameters_dict.music_dict['Y_grid_size_in_fm'] =   (part2s_dict['NY'] - 1)   * part2s_dict['DY']
+            parameters_dict.music_dict['Eta_grid_size']     =   (part2s_dict['NETA'] - 1) * part2s_dict['DETA']
 
-        parameters_dict.music_dict['X_grid_size_in_fm'] =   (part2s_dict['NX'] - 1)   * part2s_dict['DX']
-        parameters_dict.music_dict['Y_grid_size_in_fm'] =   (part2s_dict['NY'] - 1)   * part2s_dict['DY']
-        parameters_dict.music_dict['Eta_grid_size']     =   (part2s_dict['NETA'] - 1) * part2s_dict['DETA']
-
-        parameters_dict.music_dict['EOS_to_use'] = part2s_dict['EOS_ID']
+            parameters_dict.music_dict['EOS_to_use'] = part2s_dict['EOS_ID']
 
     if parameters_dict.music_dict['boost_invariant'] == 1:
         parameters_dict.iss_dict['hydro_mode'] = 1
