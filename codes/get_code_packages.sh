@@ -40,7 +40,7 @@ rm -fr photonEmission_hydroInterface_code/.git
 
 rm -fr dileptonEmission_hydroInterface_code
 git clone --depth=1 https://github.com/xyw2016/DileptonEmission.git -b dilepton_polarization dileptonEmission_hydroInterface_code
-(cd dileptonEmission_hydroInterface_code; git checkout f428b694e00b1684e6b1244611fcb67888ade65d)
+(cd dileptonEmission_hydroInterface_code; git checkout 759d9f4867952f839c5e65dba2db3a42f4d58ea4)
 rm -fr dileptonEmission_hydroInterface_code/.git
 
 
