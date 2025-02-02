@@ -65,13 +65,13 @@ music_dict = {
     'boost_invariant':  0,  # whether the simulation is boost-invariant
     'Eta_grid_size': 13.0,  # spatial rapidity range 
                             # [-Eta_grid_size/2, Eta_grid_size/2 - delta_eta]
-    'Grid_size_in_eta': 32,     # number of the grid points in spatial rapidity direction
+    'Grid_size_in_eta': 128,     # number of the grid points in spatial rapidity direction
     'X_grid_size_in_fm': 30,    # spatial range along x direction in the transverse plane 
                                 # [-X_grid_size_in_fm/2, X_grid_size_in_fm/2]
     'Y_grid_size_in_fm': 30,    # spatial range along x direction in the transverse plane 
                                 # [-X_grid_size_in_fm/2, X_grid_size_in_fm/2]
-    'Grid_size_in_x': 32,      # number of the grid points in x direction
-    'Grid_size_in_y': 32,      # number of the grid points in y direction
+    'Grid_size_in_x': 128,      # number of the grid points in x direction
+    'Grid_size_in_y': 128,      # number of the grid points in y direction
     'EOS_to_use': 14,           # type of the equation of state
                                 # 14: neos_BQS lattice EoS at finite mu_B
                                 # 17: BEST lattice EoS at finite mu_B
@@ -169,7 +169,6 @@ dilepton_dict = {
 
 
 }
-
 
 # iSS
 iss_dict = {

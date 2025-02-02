@@ -12,6 +12,7 @@ control_dict = {
     'save_hydro_surfaces': True,   # flag to save hydro surfaces
     'save_UrQMD_files': False,      # flag to save UrQMD files
     'compute_photon_emission': False,   # flag to compute EM radiation from hydrodynamic medium
+    'compute_dilepton_emission': True,   # flag to compute EM radiation from hydrodynamic medium
     'usePosteriorParameters': False,
     'PosteriorChainFilePath': "config/BESPost",
     'PosteriorParamSet': 0,
@@ -103,6 +104,71 @@ music_dict = {
     'eps_switch': 0.35,                 # GeV/fm^3
 }
 
+# dilepton_emission
+dilepton_dict = {
+    'hydro_flag' : 2,
+    'hydro_nskip_tau' : 1,
+    'dilepton_emission_rate' : 2, 
+    'alpha_s' : 0.3,
+    'Xmin' : -15.0,
+    'dx' : 0.2,
+    'Ymin' : -15.0,
+    'dy' : 0.2,
+    'neta' : 10,
+    'eta_i' : 0.0,
+    'eta_f' : 3.0,
+    'ETAmax' : 15.0,
+    'T_sw_high' : 0.105,
+    'T_sw_low' : 0.103,
+    'T_dec' : 0.12,
+    'HydroinfoVisflag' : 1,
+    'HydroinfoBuffersize' : 500,
+    'include_baryondiff_deltaf' : 0, 
+    'include_shearvisc_deltaf' : 0,
+    'turn_off_transverse_flow' : 0,
+    'turn_on_muB' : 1 ,
+    'test_code_flag' : 0, 
+    'T_test' : 0.2,
+    'muB_test' : 0.0,
+    'rhoB_eplusp_test' : 2.0,
+    'inv_eplusp_test' : 1.0,
+    'np' : 20,
+    'nphi' : 20,
+    'nm' : 20,
+    'photon_q_i' : 0.0,
+    'photon_q_f' : 6.0,
+    'photon_phi_q_i' : 0.0,
+    'photon_phi_q_f' : 6.2831853,
+    'photon_y_i' : -3.,
+    'photon_y_f' :  3.,
+    'nrapidity' : 21 ,
+    'dilepton_mass_i' : 0.1,
+    'dilepton_mass_f' : 5.0,
+    'use_logarithmic_mass_grid' : 1,
+    'norder' : 7 ,
+    'differential_flag' : 0, 
+    'tau_start' : 0.2 ,
+    'tau_end' : 15.0,
+    'dTau' : 0.1,
+    'n_tau_cut' : 20,
+    'T_cuthigh' : 0.5,
+    'T_cutlow' : 0.1,
+    'nTcut': 20,
+    'calHGIdFlag': 0,
+    
+    'etaovers': 0.12,
+    'flag_prehydro': 0, 
+    'flag_hydro': 1, 
+    
+    'Hydro_2D': 0,
+    'USE_2D_mode':  0, 
+    'Hydro_etas_i': -3.,
+    'Hydro_etas_f':  3.,
+    'Hydro_netas_n': 21,
+
+
+
+}
 
 # iSS
 iss_dict = {

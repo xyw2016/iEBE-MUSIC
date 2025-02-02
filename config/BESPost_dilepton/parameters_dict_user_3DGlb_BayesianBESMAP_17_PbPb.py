@@ -22,9 +22,9 @@ control_dict = {
 # 3DMCGlauber model
 mcglauber_dict = {
     'database_name': "self",     # self: generate initial condition on the fly
-    'Projectile':  "Au",         # projectile nucleus name
-    'Target'    :  "Au",         # target nucleus name
-    'roots'     :  7.7,          # collision energy (GeV)
+    'Projectile':  "Pb",         # projectile nucleus name
+    'Target'    :  "Pb",         # target nucleus name
+    'roots'     :  17.3,          # collision energy (GeV)
     'seed'      :   -1,          # random seed (-1: system)
     'baryon_junctions': 1,       # 0: baryon number assumed to be at string end
                                  # 1: baryon number transported assuming baryon
@@ -65,13 +65,13 @@ music_dict = {
     'boost_invariant':  0,  # whether the simulation is boost-invariant
     'Eta_grid_size': 13.0,  # spatial rapidity range 
                             # [-Eta_grid_size/2, Eta_grid_size/2 - delta_eta]
-    'Grid_size_in_eta': 32,     # number of the grid points in spatial rapidity direction
+    'Grid_size_in_eta': 128,     # number of the grid points in spatial rapidity direction
     'X_grid_size_in_fm': 30,    # spatial range along x direction in the transverse plane 
                                 # [-X_grid_size_in_fm/2, X_grid_size_in_fm/2]
     'Y_grid_size_in_fm': 30,    # spatial range along x direction in the transverse plane 
                                 # [-X_grid_size_in_fm/2, X_grid_size_in_fm/2]
-    'Grid_size_in_x': 32,      # number of the grid points in x direction
-    'Grid_size_in_y': 32,      # number of the grid points in y direction
+    'Grid_size_in_x': 128,      # number of the grid points in x direction
+    'Grid_size_in_y': 128,      # number of the grid points in y direction
     'EOS_to_use': 14,           # type of the equation of state
                                 # 14: neos_BQS lattice EoS at finite mu_B
                                 # 17: BEST lattice EoS at finite mu_B
@@ -99,7 +99,7 @@ music_dict = {
 
     # parameters for freeze out and Cooper-Frye
     'output_evolution_data': 5,  # flag to output evolution history to file
-    'freeze_out_tau_start_max': 3.5,    # the maximum freeze-out starting time [fm/c]
+    'freeze_out_tau_start_max': 2.0,    # the maximum freeze-out starting time [fm/c]
     'N_freeze_out': 1,
     'eps_switch': 0.35,                 # GeV/fm^3
 }
@@ -169,7 +169,6 @@ dilepton_dict = {
 
 
 }
-
 
 # iSS
 iss_dict = {
