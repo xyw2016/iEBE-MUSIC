@@ -42,7 +42,10 @@ cd ..
 
 ## download iSS particle sampler
 rm -fr iSS_code
-git clone --depth=1 https://github.com/chunshen1987/iSS -b v1.1 iSS_code
+git clone --depth=1 https://github.com/xyw2016/iSS.git -b xyw_dev iSS_code
+commitHash="dd02b971f68514e83c7266191c81212df2c627f9"
+cd iSS_code 
+git checkout $commitHash
 rm -fr iSS_code/.git
 
 #
@@ -60,9 +63,9 @@ rm -fr urqmd_code/.git
 #
 ## download hadronic afterner
 rm -fr hadronic_afterburner_toolkit_code
-git clone --depth=1 https://github.com/xyw2016/hadronic_afterburner_toolkit.git -b ldu_dev hadronic_afterburner_toolkit_code
-commitHash="9137411d27fb8b79f1c8b00de9115bfe3f193057"
+git clone --depth=1 https://github.com/xyw2016/hadronic_afterburner_toolkit.git -b xyw_dev hadronic_afterburner_toolkit_code
+commitHash="bffe82fd9cea473e3a8e34c260ab4eeb0097c2d3"
 cd  hadronic_afterburner_toolkit_code
 git checkout $commitHash
-rm -fr hadronic_afterburner_toolkit_code/.git
+rm -fr hadronic_afterburner_toolkit_code2/.git
 cd ..

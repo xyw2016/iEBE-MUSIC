@@ -399,7 +399,8 @@ iss_dict = {
 
     'output_samples_into_files': 0,  # output particle samples into individual files
     'store_samples_in_memory': 1,    # flag to store particle samples in memory
-    'use_OSCAR_format': 1,           # output results in OSCAR format
+    'use_OSCAR_format': 0,           # output results in OSCAR format
+    'use_OSCAR2013_format': 1,           # output results in OSCAR format
     'use_gzip_format': 0,  # output results in gzip format (only works with
                            # store_samples_in_memory = 1)
     'use_binary_format': 0,
@@ -588,7 +589,7 @@ smash_dict =  {
     'Output_Interval': 10.0,
     'Format': 'Oscar2013',
     'File_Directory': "./input/list",
-    'File_Prefix': "particle_list_osc",
+    'File_Prefix': "mc_particle_list",
     'Shift_Id': 0,
     'Extended': 'False',
 }
@@ -807,8 +808,14 @@ def update_parameters_dict(par_dict_path, ran_seed):
         parameters_dict.iss_dict['hydro_mode'] = 2
         parameters_dict.is3d_dict['dimension'] = 3
 
-    if parameters_dict.control_dict['use_SMASH_afterburner']:
-        parameters_dict.smash_dict['Nevents'] = parameters_dict.is3d_dict['oversample_num']
+    if parameters_dict.control_dict['use_SMASH_afterburner']: 
+        if parameters_dict.control_dict['use_iS3D']:
+            parameters_dict.smash_dict['Nevents'] = parameters_dict.is3d_dict['oversample_num']
+        else:
+            parameters_dict.smash_dict['Nevents'] = parameters_dict.iss_dict['number_of_repeated_sampling']
+            parameters_dict.iss_dict['afterburner_type'] = 2
+            parameters_dict.iss_dict['sample_upto_desired_particle_number'] = 0
+
 
     music_dict.update(parameters_dict.music_dict)
     iss_dict.update(parameters_dict.iss_dict)

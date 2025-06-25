@@ -514,6 +514,84 @@ do
 """)
     script.close()
 
+def generate_script_afterburner_iSS_SMASH(folder_name, cluster_name, HBT_flag, GMC_flag, NO_COLL_flag):
+    """This function generates script for hadronic afterburner"""
+    working_folder = folder_name
+
+    logfile = ""
+    if cluster_name != "OSG":
+        logfile = " >> run.log"
+
+    script = open(path.join(working_folder, "run_afterburner.sh"), "w")
+    script.write("""#!/bin/bash
+
+unalias ls 2>/dev/null
+
+SubEventId=$1
+
+(
+cd UrQMDev_$SubEventId
+
+mkdir -p UrQMD_results
+rm -fr UrQMD_results/*
+
+for iev in `ls hydro_event | grep "surface"`
+do
+    cd iSS
+    mkdir -p results
+    rm -fr results/*
+    mv ../hydro_event/$iev results/surface.dat
+    mv ../hydro_event/music_input results/music_input
+    if [ $SubEventId = "0" ]; then
+    """)
+    script.write("    ./iSS.e {0}".format(logfile))
+    script.write("""
+    else
+        ./iSS.e > run.log
+    fi
+    """)
+
+
+    script.write("""
+    cd ../SMASH
+    mv ../iSS/mc_particle_list0 ./mc_particle_list0
+    rm -rf results
+    mkdir -p results
+    ./smash -i config.yaml -o ./results > run.log 2> run.err
+    mv results/particle_lists.oscar ../UrQMD_results/particle_list.oscar
+    rm ./mc_particle_list0
+        """)
+    script.write("""
+    cd ..
+    ../hadronic_afterburner_toolkit/convert_to_binary_SMASH3p0.e UrQMD_results/particle_list.oscar
+    rm -fr UrQMD_results/particle_list.oscar
+""")
+    if HBT_flag:
+        script.write("""
+    cd hadronic_afterburner_toolkit
+    mkdir -p results
+    cd results; rm -fr *
+    ln -s ../../UrQMD_results/particle_list.gz particle_list.dat
+    cd ..
+""")
+        script.write('    if [ $SubEventId = "0" ]; then\n')
+        script.write(
+            "        ./hadronic_afterburner_tools.e analyze_flow=0 analyze_HBT=1 particle_monval=211 distinguish_isospin=1 event_buffer_size=500000 {0}\n"
+            .format(logfile))
+        script.write("    else\n")
+        script.write(
+            "        ./hadronic_afterburner_tools.e analyze_flow=0 analyze_HBT=1 particle_monval=211 distinguish_isospin=1 event_buffer_size=500000 >> run.log\n"
+        )
+        script.write("    fi\n")
+        script.write("    mv results/HBT* ../UrQMD_results/ \n")
+    script.write("""
+    done
+
+    rm -fr hydro_event
+)
+""")
+    script.close()
+
 
 def generate_script_afterburner_iS3D_UrQMD(folder_name, cluster_name, NO_COLL_flag, IS3D_continuous_flag, nthreads):
     """This function generates script for hadronic afterburner"""
@@ -874,7 +952,10 @@ def generate_event_folders(initial_condition_database, initial_condition_type,
         else:    
             generate_script_afterburner_iS3D_UrQMD(event_folder, cluster_name, NO_COLL_flag, IS3D_continuous_flag, n_threads)
     else:
-        generate_script_afterburner_iSS_UrQMD(event_folder, cluster_name, HBT_flag, GMC_flag, NO_COLL_flag)
+        if use_smash_afterburner_flag:
+            generate_script_afterburner_iSS_SMASH(event_folder, cluster_name, HBT_flag, GMC_flag, NO_COLL_flag)
+        else:
+            generate_script_afterburner_iSS_UrQMD(event_folder, cluster_name, HBT_flag, GMC_flag, NO_COLL_flag)
 
     generate_script_analyze_spvn(event_folder, cluster_name, HBT_flag)
 
