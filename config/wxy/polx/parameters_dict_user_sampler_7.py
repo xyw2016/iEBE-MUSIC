@@ -129,8 +129,11 @@ iss_dict = {
     'include_deltaf_shear': 1,      # include delta f contribution from shear
     'include_deltaf_bulk': 0,       # include delta f contribution from bulk
     'include_deltaf_diffusion': 1,  # include delta f contribution from diffusion
-    'sample_upto_desired_particle_number': 1,  # 1: flag to run sampling until desired
+    'sample_upto_desired_particle_number': 0,  # 1: flag to run sampling until desired
                                                # particle numbers is reached
+    'number_of_repeated_sampling': 50,         # number of repeaded sampling
+    'use_OSCAR_format': 1,           # output results in OSCAR format
+    'use_OSCAR2013_format': 0,           # output results in OSCAR format
     'number_of_particles_needed': 100000,      # number of hadrons to sample
     'local_charge_conservation': 0,     # flag to impose local charge conservation
     'global_momentum_conservation': 0,  # flag to impose GMC
@@ -220,6 +223,7 @@ urqmd_dict = {
 
 # hadronic afterburner toolkit
 hadronic_afterburner_toolkit_dict = {
+    'read_in_mode': 2,  # mode for reading in particle information
     'event_buffer_size': 100000,        # the number of events read in at once
     'compute_correlation': 0,           # flag to compute correlation function
     'flag_charge_dependence': 0,        # flag to compute charge dependence correlation
