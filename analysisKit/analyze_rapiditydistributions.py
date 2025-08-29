@@ -32,9 +32,8 @@ def calculate_dNdeta(etaArr, dNdetaArr, outputFileName: str) -> None:
     """
         this function calculates the rapidity distribution of dN/deta
 
-        etaArr[nev, neta]
+        etaArr[neta]
     """
-    etaMean = np.sum(etaArr*dNdetaArr, axis=0)/np.sum(dNdetaArr, axis=0)
     dNMean = np.mean(dNdetaArr, axis=0)
     dNerr = np.std(dNdetaArr, axis=0)/np.sqrt(len(dNdetaArr[:, 0]))
 
@@ -43,8 +42,8 @@ def calculate_dNdeta(etaArr, dNdetaArr, outputFileName: str) -> None:
     else:
         f = open(outputFileName, 'w')
         f.write("# eta  dN/deta  dN/deta_err\n")
-    for ieta in range(len(etaMean)):
-        f.write("{:.3f}  {:.5e}  {:.5e}\n".format(etaMean[ieta], dNMean[ieta],
+    for ieta in range(len(etaArr)):
+        f.write("{:.3f}  {:.5e}  {:.5e}\n".format(etaArr[ieta], dNMean[ieta],
                                                   dNerr[ieta]))
     f.close()
 
@@ -53,9 +52,8 @@ def calculate_dETdeta(etaArr, dETdetaArr, outputFileName: str) -> None:
     """
         this function calculates the rapidity distribution of dET/deta
 
-        etaArr[nev, neta]
+        etaArr[neta]
     """
-    etaMean = np.sum(etaArr*dETdetaArr, axis=0)/np.sum(dETdetaArr, axis=0)
     dETMean = np.mean(dETdetaArr, axis=0)
     dETerr = np.std(dETdetaArr, axis=0)/np.sqrt(len(dETdetaArr[:, 0]))
 
@@ -64,8 +62,8 @@ def calculate_dETdeta(etaArr, dETdetaArr, outputFileName: str) -> None:
     else:
         f = open(outputFileName, 'w')
         f.write("# eta  dET/deta  dET/deta_err\n")
-    for ieta in range(len(etaMean)):
-        f.write("{:.3f}  {:.5e}  {:.5e}\n".format(etaMean[ieta], dETMean[ieta],
+    for ieta in range(len(etaArr)):
+        f.write("{:.3f}  {:.5e}  {:.5e}\n".format(etaArr[ieta], dETMean[ieta],
                                                   dETerr[ieta]))
     f.close()
 
@@ -117,15 +115,13 @@ for icen in range(len(centralityCutList) - 1):
 
     dNdetaArr = []
     dETdetaArr = []
-    etaArr = []
+    etaArr = data["global"]['etaArr']
     for event_name in selected_events_list:
-        etaArr.append(data[event_name]['etaArr'])
         dNdetaArr.append(data[event_name]['dNch/deta'])
         dETdetaArr.append(data[event_name]['dET/deta'])
 
-    etaArr = np.array(etaArr)
     dNdetaArr = np.array(dNdetaArr)
     dETdetaArr = np.array(dETdetaArr)
 
-    calculate_dNdeta(etaArr, dNdetaArr, f"STAR_dNdeta_C{cenLabel}.txt")
-    calculate_dETdeta(etaArr, dETdetaArr, f"STAR_dETdeta_C{cenLabel}.txt")
+    calculate_dNdeta(etaArr, dNdetaArr, f"ALICE_dNdeta_C{cenLabel}.txt")
+    calculate_dETdeta(etaArr, dETdetaArr, f"ALICE_dETdeta_C{cenLabel}.txt")
