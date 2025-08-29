@@ -101,10 +101,12 @@ except IndexError:
 with open(database_file, "rb") as pf:
     data = pickle.load(pf)
 
-dNdyList = []
+dNdyDict = {}
 for event_name in data.keys():
-    dNdyList.append(data[event_name]['Nch'])
-dNdyList = -np.sort(-np.array(dNdyList))
+    if event_name != 'global':
+        Nch = data[event_name]['Nch']
+        dNdyDict[event_name] = Nch
+dNdyList = -np.sort(-np.array(list(dNdyDict.values())))
 print(f"Number of good events: {len(dNdyList)}")
 
 for icen in range(len(centralityCutList) - 1):
@@ -120,9 +122,9 @@ for icen in range(len(centralityCutList) - 1):
         dN_dy_cut_high = dNcutList[icen]
         dN_dy_cut_low = dNcutList[icen + 1]
 
-    for event_name in data.keys():
-        if (data[event_name]['Nch'] > dN_dy_cut_low
-                and data[event_name]['Nch'] <= dN_dy_cut_high):
+    for event_name in dNdyDict.keys():
+        if (dNdyDict[event_name] > dN_dy_cut_low
+                and dNdyDict[event_name] <= dN_dy_cut_high):
             selected_events_list.append(event_name)
 
     nev = len(selected_events_list)
@@ -139,11 +141,10 @@ for icen in range(len(centralityCutList) - 1):
 
     chargedpTDiff = []
     QnArrEtapTw = []
-    pTArr = []
+    pTArr = data['global']['pTArr']
     for event_name in selected_events_list:
         chargedpTDiff.append(data[event_name]['ch_pTArr'])
         QnArrEtapTw.append(data[event_name]['chVneta_pTw_pT_0p15_2'])
-        pTArr = data[event_name]['pTArr']
     chargedpTDiff = np.array(chargedpTDiff)
     QnArrEtapTw = np.array(QnArrEtapTw)
 

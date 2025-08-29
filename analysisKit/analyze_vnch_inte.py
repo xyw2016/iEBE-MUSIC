@@ -910,18 +910,19 @@ except IndexError:
 with open(database_file, "rb") as pf:
     data = pickle.load(pf)
 
-dNdyList = []
+dNdyDict = {}
 for event_name in data.keys():
-    Nch = data[event_name]['Nch']
-    dNdyList.append(Nch)
-dNdyList = -np.sort(-np.array(dNdyList))
+    if event_name != 'global':
+        Nch = data[event_name]['Nch']
+        dNdyDict[event_name] = Nch
+dNdyList = -np.sort(-np.array(list(dNdyDict.values())))
 print(f"Number of good events: {len(dNdyList)}")
 
 for icen in range(len(centralityCutList) - 1):
     if centralityCutList[icen + 1] < centralityCutList[icen]:
         continue
-    selected_events_list = []
 
+    selected_events_list = []
     dN_dy_cut_high = dNdyList[int(len(dNdyList)*centralityCutList[icen]/100.)]
     dN_dy_cut_low = dNdyList[min(
         len(dNdyList) - 1, int(len(dNdyList)*centralityCutList[icen + 1]/100.))]
@@ -930,9 +931,9 @@ for icen in range(len(centralityCutList) - 1):
         dN_dy_cut_high = dNcutList[icen]
         dN_dy_cut_low = dNcutList[icen + 1]
 
-    for event_name in data.keys():
-        Nch = data[event_name]['Nch']
-        if Nch > dN_dy_cut_low and Nch <= dN_dy_cut_high:
+    for event_name in dNdyDict.keys():
+        if (dNdyDict[event_name] > dN_dy_cut_low
+                and dNdyDict[event_name] <= dN_dy_cut_high):
             selected_events_list.append(event_name)
 
     nev = len(selected_events_list)
