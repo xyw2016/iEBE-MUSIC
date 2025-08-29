@@ -315,12 +315,12 @@ def calcualte_inte_Vneta_pTeta(pTMin: float, pTMax: float, data: np.ndarray,
         weights[:, pTIdx1 + 1] = pTmaxFrac - 0.5
 
     pT_event = data[:, 1].reshape(nEta, npT)
-    dN_event = data[:, 2].reshape(nEta, npT)
+    dN_event = np.real(data[:, 2].reshape(nEta, npT))
 
     N = np.sum(dN_event * weights, axis=1) + EPS
     meanpT = np.sum(pT_event * weights * dN_event, axis=1) / N
     totalN = N*Nevents
-    temp_vn_array = [N, meanpT]  # dN/deta, <pT>(eta)
+    temp_vn_array = [N/dEta, meanpT]        # dN/deta, <pT>(eta)
     for iorder in range(1, NORDER + 1):
         Qn_real_event = data[:, 2*iorder + 2].reshape(nEta, npT)
         Qn_imag_event = data[:, 2*iorder + 3].reshape(nEta, npT)
@@ -490,11 +490,10 @@ for ievent, event_i in enumerate(eventList):
         vn_filename = f"particle_99999_dNdeta_pT_0_4{weakString}.dat"
         vn_data = np.nan_to_num(eventGroup.get(vn_filename))
         outdata[event_i]["dET/deta"] = vn_data[:, -2]
-        nEta = len(vn_data[:, 0])
 
         vn_filename = f'particle_9999_pTeta_distribution{weakString}.dat'
-        vnInte_filename = f'particle_9999_vndata_eta_-0.5_0.5{weakString}.dat'
         vn_data = np.nan_to_num(eventGroup.get(vn_filename))
+        vnInte_filename = f'particle_9999_vndata_eta_-0.5_0.5{weakString}.dat'
         vnInte_data = np.nan_to_num(eventGroup.get(vnInte_filename))
         N_hadronic_events = vnInte_data[-1, 2]
 
@@ -533,6 +532,11 @@ for ievent, event_i in enumerate(eventList):
                                                outdata['global']["pTArr"],
                                                N_hadronic_events, 0)
         outdata[event_i]["chVneta_pT_0p2_3"] = np.array(Vn_vector)
+        Vn_vector = calcualte_inte_Vneta_pTeta(0, 4, vn_data,
+                                               outdata['global']["etaArr"],
+                                               outdata['global']["pTArr"],
+                                               N_hadronic_events, 0)
+        outdata[event_i]["chVneta_pT_0_4"] = np.array(Vn_vector)
 
 print("nev = {}".format(len(eventList)))
 with open(f'QnVectors{weakString}.pickle', 'wb') as pf:
