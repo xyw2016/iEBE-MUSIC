@@ -56,6 +56,12 @@ kinematicCutsDict_STAR = {
 }
 
 kinematicCutsDict_ALICE = {
+    "ALICE_eta_-0p5_0p5_pT_0_4": {
+        "pTmin": 0.0,
+        "pTmax": 4,
+        "etamin": -0.5,
+        "etamax": 0.5
+    },
     "ALICE_V0A_eta_2p8_5p1_pT_0_4": {
         "pTmin": 0,
         "pTmax": 4,
@@ -223,7 +229,7 @@ def calcualte_inte_Vn_eta(etaMin, etaMax, data, vnFlag=True):
 def calcualte_inte_Vn_pTeta(pTMin: float, pTMax: float, etaMin: float,
                             etaMax: float, data: np.ndarray,
                             etabin: np.ndarray, pTbin: np.ndarray,
-                            Nevents: int):
+                            Nevents: int, vnOrder:int):
     """
         this function calculates the pT and eta-integrated vn in a
         given pT range (pTMin, pTMax) and eta range (etaMin, etaMax)
@@ -270,18 +276,21 @@ def calcualte_inte_Vn_pTeta(pTMin: float, pTMax: float, etaMin: float,
                                                 * (etamaxFrac - 0.5))
 
     dN_event = data[:, 2].reshape(nEta, npT)
+    ET_event = data[:, 3].reshape(nEta, npT)
     N = np.sum(dN_event * weights) + EPS
+    ET = np.sum(ET_event * weights) + EPS
     pT_event = data[:, 1].reshape(nEta, npT)
     meanpT = np.sum(pT_event * weights * dN_event) / N
 
     totalN = N*Nevents
     temp_vn_array = [N, meanpT]
-    for iorder in range(1, NORDER + 1):
+    for iorder in range(1, vnOrder + 1):
         Qn_real_event = data[:, 2*iorder + 2].reshape(nEta, npT)
         Qn_imag_event = data[:, 2*iorder + 3].reshape(nEta, npT)
         Vn_real_inte = np.sum(Qn_real_event * weights) / N
         Vn_imag_inte = np.sum(Qn_imag_event * weights) / N
         temp_vn_array.append(Vn_real_inte + 1j*Vn_imag_inte)
+    temp_vn_array.append(ET)
     temp_vn_array.append(totalN)
     return temp_vn_array
 
@@ -316,8 +325,10 @@ def calcualte_inte_Vneta_pTeta(pTMin: float, pTMax: float, data: np.ndarray,
 
     pT_event = data[:, 1].reshape(nEta, npT)
     dN_event = np.real(data[:, 2].reshape(nEta, npT))
+    ET_event = np.real(data[:, 3].reshape(nEta, npT))
 
     N = np.sum(dN_event * weights, axis=1) + EPS
+    ET = np.sum(ET_event * weights, axis=1)
     meanpT = np.sum(pT_event * weights * dN_event, axis=1) / N
     totalN = N*Nevents
     temp_vn_array = [N/dEta, meanpT]        # dN/deta, <pT>(eta)
@@ -333,7 +344,8 @@ def calcualte_inte_Vneta_pTeta(pTMin: float, pTMax: float, data: np.ndarray,
             Vn_real_inte = np.sum(Qn_real_event * weights, axis=1) / N
             Vn_imag_inte = np.sum(Qn_imag_event * weights, axis=1) / N
         temp_vn_array.append(Vn_real_inte + 1j*Vn_imag_inte)    # Vn(eta)
-    temp_vn_array.append(totalN)
+    temp_vn_array.append(ET/dEta)            # dET/deta
+    temp_vn_array.append(totalN)             # totalN
     return temp_vn_array
 
 
@@ -372,23 +384,23 @@ for ievent, event_i in enumerate(eventList):
         print("fetching event: {0} from the database {1} ...".format(
             event_i, database_file))
     eventGroup = h5_data.get(event_i)
-    vn_filename = f"particle_9999_vndata_diff_eta_-0.5_0.5{weakString}.dat"
+    vn_filename = f"particle_9999_vndata_eta_-0.5_0.5{weakString}.dat"
     vn_data = np.nan_to_num(eventGroup.get(vn_filename))
     if vn_data.ndim == 2:
         outdata[event_i] = {}
-        dN_vector = calcualte_yield_and_meanpT(0.0, 3.0, vn_data)
-        outdata[event_i]["Nch"] = dN_vector[0]
-        outdata[event_i]["mean_pT_ch"] = dN_vector[1]
+        outdata[event_i]["Nch"] = vn_data[0, 1]
+        outdata[event_i]["mean_pT_ch"] = vn_data[0, 3]
     else:
         print(f"skip {event_i} ...")
         print("vn_data shape: ", vn_data.shape)
         continue
 
-    # compute dET/deta
-    vn_filename = f"particle_99999_dNdeta_pT_0_4{weakString}.dat"
-    vn_data = np.nan_to_num(eventGroup.get(vn_filename))
-    dN_vector = calcualte_inte_Vn_eta(-0.5, 0.5, vn_data, vnFlag=False)
-    outdata[event_i]["ET"] = dN_vector[1]
+    # identified particle yields and mean pT
+    for pidName, pid in pidList[1:]:
+        vn_filename = f"particle_{pid}_vndata_y_-0.5_0.5{weakString}.dat"
+        vn_data = np.nan_to_num(eventGroup.get(vn_filename))
+        outdata[event_i]["{}_dNdy_meanpT".format(pidName)] = (
+                                            [vn_data[0, 1], vn_data[0, 3]])
 
     if initialFlag:
         # initial eccentricity
@@ -396,13 +408,9 @@ for ievent, event_i in enumerate(eventList):
         eccn_data = np.nan_to_num(eventGroup.get(ecc_filename))
         outdata[event_i]["ecc_n"] = eccn_data[2:]
 
-    # identified particle yields and mean pT
-    for pidName, pid in pidList[1:]:
-        vn_filename = f"particle_{pid}_vndata_diff_y_-0.5_0.5{weakString}.dat"
-        vn_data = np.nan_to_num(eventGroup.get(vn_filename))
-        dN_vector = calcualte_yield_and_meanpT(0.0, 3.0, vn_data)
-        outdata[event_i]["{}_dNdy_meanpT".format(pidName)] = dN_vector
-
+    vnInte_filename = f'particle_9999_vndata_eta_-0.5_0.5{weakString}.dat'
+    vnInte_data = np.nan_to_num(eventGroup.get(vnInte_filename))
+    N_hadronic_events = vnInte_data[-1, 2]
     if ievent == 0:
         vneta_filename = f"particle_99999_dNdeta_pT_0_4{weakString}.dat"
         vneta_data = np.nan_to_num(eventGroup.get(vneta_filename))
@@ -417,11 +425,17 @@ for ievent, event_i in enumerate(eventList):
         pTMin = round(vnpT_data[0, 0], 1)
         outdata["global"]["pTArr"] = np.linspace(pTMin, pTMax, npT)
 
+    # compute dET/deta at mid-rapidity
+    vn_filename = f'particle_99999_pTeta_distribution{weakString}.dat'
+    vn_data = np.nan_to_num(eventGroup.get(vn_filename))
+    dN_vector = calcualte_inte_Vn_pTeta(0, 4, -0.5, 0.5, vn_data,
+                                        outdata["global"]['etaArr'],
+                                        outdata["global"]['pTArr'],
+                                        N_hadronic_events, 4)
+    outdata[event_i]["ET"] = np.real(dN_vector[-2])
+
 
     # charged hadron vn with different kinematic cuts
-    vnInte_filename = f'particle_9999_vndata_eta_-0.5_0.5{weakString}.dat'
-    vnInte_data = np.nan_to_num(eventGroup.get(vnInte_filename))
-    N_hadronic_events = vnInte_data[-1, 2]
     vn_filename = f'particle_9999_pTeta_distribution{weakString}.dat'
     vn_data = np.nan_to_num(eventGroup.get(vn_filename))
     for exp_i, expName in enumerate(kinematicCutsDict):
@@ -432,7 +446,7 @@ for ievent, event_i in enumerate(eventList):
                                             pTetacut['etamax'], vn_data,
                                             outdata["global"]['etaArr'],
                                             outdata["global"]['pTArr'],
-                                            N_hadronic_events)
+                                            N_hadronic_events, NORDER)
         outdata[event_i][expName] = np.array(Vn_vector)
 
     if pTdiffFlag:
@@ -493,10 +507,6 @@ for ievent, event_i in enumerate(eventList):
 
         vn_filename = f'particle_9999_pTeta_distribution{weakString}.dat'
         vn_data = np.nan_to_num(eventGroup.get(vn_filename))
-        vnInte_filename = f'particle_9999_vndata_eta_-0.5_0.5{weakString}.dat'
-        vnInte_data = np.nan_to_num(eventGroup.get(vnInte_filename))
-        N_hadronic_events = vnInte_data[-1, 2]
-
         if expFlag == "STAR":
             # for longitudinal derrelation
             Vn_vector = calcualte_inte_Vneta_pTeta(0.4, 4.0, vn_data,
@@ -532,11 +542,6 @@ for ievent, event_i in enumerate(eventList):
                                                outdata['global']["pTArr"],
                                                N_hadronic_events, 0)
         outdata[event_i]["chVneta_pT_0p2_3"] = np.array(Vn_vector)
-        Vn_vector = calcualte_inte_Vneta_pTeta(0, 4, vn_data,
-                                               outdata['global']["etaArr"],
-                                               outdata['global']["pTArr"],
-                                               N_hadronic_events, 0)
-        outdata[event_i]["chVneta_pT_0_4"] = np.array(Vn_vector)
 
 print("nev = {}".format(len(eventList)))
 with open(f'QnVectors{weakString}.pickle', 'wb') as pf:
