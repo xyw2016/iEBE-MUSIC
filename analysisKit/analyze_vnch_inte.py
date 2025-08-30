@@ -44,6 +44,25 @@ def calculate_pid_dN(dN_data_array, outputFilename, cenLabel):
     return
 
 
+def calculate_ET(ET_data_array, outputFilename, cenLabel):
+    """
+        This function computes the averaged value of transverse energy
+        for different centralities.
+    """
+    nev = len(ET_data_array)
+    ET_mean = np.mean(ET_data_array, axis=0)
+    ET_err = np.std(ET_data_array, axis=0)/np.sqrt(nev)
+
+    if path.isfile(outputFilename):
+        f = open(outputFilename, 'a')
+    else:
+        f = open(outputFilename, 'w')
+        f.write("# cen  ET  ET_err\n")
+    f.write(f"{cenLabel:.3f}  {ET_mean:.5e}  {ET_err:.5e}\n")
+    f.close()
+    return
+
+
 def calculate_pid_meanpT(pT_data_array, outputFilename, cenLabel):
     """
         This function computes the averaged value of the identified particle
@@ -952,6 +971,7 @@ for icen in range(len(centralityCutList) - 1):
     QnArr3 = []
     piddNArr = []
     pidmeanpTArr = []
+    ETArr = []
     for event_name in selected_events_list:
         QnArr1.append(data[event_name]['ALICE_eta_-0p4_0p4_pT_0p2_3'])
         QnArr2.append(data[event_name]['ALICE_eta_-0p8_-0p4_pT_0p2_3'])
@@ -960,6 +980,7 @@ for icen in range(len(centralityCutList) - 1):
         meanpTtmp = []
         dNtmp.append(data[event_name]['Nch'])
         meanpTtmp.append(data[event_name]['mean_pT_ch'])
+        ETArr.append(data[event_name]['ET'])
         for pidName in pidList:
             tmp = data[event_name][f'{pidName}_dNdy_meanpT']
             dNtmp.append(tmp[0])
@@ -971,6 +992,7 @@ for icen in range(len(centralityCutList) - 1):
     QnArr3 = np.array(QnArr3)
     piddNArr = np.array(piddNArr)
     pidmeanpTArr = np.array(pidmeanpTArr)
+    ETArr = np.array(ETArr)
 
     calcualte_vn_2_with_gap(QnArr2, QnArr3, "vn2_sub.dat", cenLabel)
     calculate_vn4_2sub(QnArr2, QnArr3, "vn4_2sub.dat", "vn4_2sub_over_vn2.dat",
@@ -979,6 +1001,7 @@ for icen in range(len(centralityCutList) - 1):
                       cenLabel)
     calculate_pid_dN(piddNArr, "pid_dN.dat", cenLabel)
     calculate_pid_meanpT(pidmeanpTArr, "pid_meanpT.dat", cenLabel)
+    calculate_ET(ETArr, "ET.dat", cenLabel)
     #calculateNonLinearResponseV2_2sub(QnArr2, QnArr3, "nonLinearV2_2sub.dat",
     #                                  cenLabel)
     #calculateNonLinearResponseV3_2sub(QnArr2, QnArr3, "nonLinearV3_2sub.dat",
