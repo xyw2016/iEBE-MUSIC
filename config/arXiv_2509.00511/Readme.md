@@ -22,6 +22,20 @@ Paper:
 
 Datasets:
 ```
+@dataset{mantysaari_2025_17063346,
+  author       = {Mäntysaari, Heikki and
+                  Schenke, Bjoern and
+                  Shen, Chun and
+                  Zhao(赵文彬), Wenbin},
+  title        = {Data repository for "Testing hydrodynamic response
+                   to initial-state geometry in Pb+d^↑ collisions"
+                  },
+  month        = sep,
+  year         = 2025,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.17063346},
+  url          = {https://doi.org/10.5281/zenodo.17063346},
+}
 ```
 
 ## Setting the parameters in the iEBE-MUSIC framework
