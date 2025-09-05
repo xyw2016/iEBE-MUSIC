@@ -406,7 +406,20 @@ for ievent, event_i in enumerate(eventList):
         # initial eccentricity
         ecc_filename = "eccentricities_evo_ed_tau_INITIAL.dat"
         eccn_data = np.nan_to_num(eventGroup.get(ecc_filename))
-        outdata[event_i]["ecc_n"] = eccn_data[2:]
+        if eccn_data.ndim == 1:
+            outdata[event_i]["ecc_n"] = eccn_data[2:]
+        else:
+            # compute ecc_n in the midrapidity
+            neta, norder = eccn_data[:, 2:].shape
+            eccn = np.zeros([norder])
+            etaArr = np.linspace(-0.5, 0.5, 11)
+            edInterp = np.interp(etaArr, eccn_data[:, 0], eccn_data[:, 1])
+            ednum = np.sum(edInterp)
+            for iorder in range(norder):
+                eccnInterp = np.interp(etaArr, eccn_data[:, 0],
+                                       eccn_data[:, 1]*eccn_data[:, iorder+2])
+                eccn[iorder] = np.sum(eccnInterp)/ednum
+            outdata[event_i]["ecc_n"] = eccn
 
     vnInte_filename = f'particle_9999_vndata_eta_-0.5_0.5{weakString}.dat'
     vnInte_data = np.nan_to_num(eventGroup.get(vnInte_filename))
