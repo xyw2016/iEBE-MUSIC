@@ -31,10 +31,15 @@ outputParameterName = [
     'bulk_viscosity_10_width_low', 'eps_switch',
 ]
 
-setId = int(sys.argv[1])
-setFlag = int(sys.argv[2])
-paramFile = str(sys.argv[3])
-ecm = float(sys.argv[4])
+try:
+    setId = int(sys.argv[1])
+    setFlag = int(sys.argv[2])
+    paramFile = str(sys.argv[3])
+    ecm = float(sys.argv[4])
+except:
+    print("Usage: parameterGenerator.py <setId> <setFlag> <paramFile> <ecm>")
+    exit(1)
+
 
 with open("posteriorChain.pkl", 'rb') as f:
     data = pickle.load(f)
