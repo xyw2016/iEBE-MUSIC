@@ -31,6 +31,7 @@ def fecth_an_3DMCGlauber_smooth_event(database_path, iev):
        database_path folder
     """
     filelist = glob(path.join(database_path, 'nuclear_thickness_TA_*.dat'))
+    filelist = sorted(filelist)
     return (filelist[iev])
 
 
