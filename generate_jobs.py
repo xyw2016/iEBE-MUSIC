@@ -376,7 +376,7 @@ export OMP_NUM_THREADS={0:d}
 
     script.write("""
 # hydro evolution
-./MUSIChydro music_input_mode_2 > run.log
+./MUSIChydro music_input_mode_2 > run.log  2>run.err
 ./sweeper.sh $results_folder
 )
 """)
