@@ -22,7 +22,7 @@ rm -fr kompost_code/.git
 
 # download MUSIC
 rm -fr MUSIC_code
-git clone --depth=3 https://github.com/MUSIC-fluid/MUSIC -b chun_dev MUSIC_code
+git clone --depth=3 https://github.com/xyw2016/MUSIC.git -b MUSIC_McGill_ip3D MUSIC_code
 (cd MUSIC_code; git checkout 44f1ab88a636291b0047218cb6c48756ab4eb97a)
 rm -fr MUSIC_code/.git
 
