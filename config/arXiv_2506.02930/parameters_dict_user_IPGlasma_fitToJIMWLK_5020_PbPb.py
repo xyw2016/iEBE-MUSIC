@@ -8,9 +8,9 @@
 control_dict = {
     'initial_state_type': "IPGlasma",  # 3DMCGlauber, IPGlasma
     'walltime': "120:00:00",           # walltime to run
-    'save_ipglasma_results': False,
-    'save_hydro_surfaces': False,   # flag to save hydro surfaces
-    'save_UrQMD_files': False,      # flag to save UrQMD files
+    'save_ipglasma_results': True,
+    'save_hydro_surfaces': True,   # flag to save hydro surfaces
+    'save_UrQMD_files': True,      # flag to save UrQMD files
 }
 
 
